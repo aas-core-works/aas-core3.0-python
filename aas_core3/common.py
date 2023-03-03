@@ -5,9 +5,7 @@
 # Do NOT edit or append.
 
 
-from typing import (
-    NoReturn
-)
+from typing import NoReturn
 
 
 def assert_never(value: NoReturn) -> NoReturn:
