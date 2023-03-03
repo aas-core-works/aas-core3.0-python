@@ -1,0 +1,2 @@
+.asset_administration_shells[0].administration.revision: Revision type shall match the revision pattern.
+.asset_administration_shells[0].administration.revision: Revision type shall have a maximum length of 4 characters.

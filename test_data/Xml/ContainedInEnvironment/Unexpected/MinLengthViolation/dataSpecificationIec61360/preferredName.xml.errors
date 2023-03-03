@@ -1,0 +1,2 @@
+.asset_administration_shells[0].embedded_data_specifications[0].data_specification_content: Preferred name must have at least one item.
+.asset_administration_shells[0].embedded_data_specifications[0].data_specification_content: Constraint AASc-002: preferred name shall be provided at least in English.

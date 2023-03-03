@@ -1,0 +1,1 @@
+assetAdministrationShells[0].extensions[0].valueType: Expected a str, but got: {type(jsonable)}

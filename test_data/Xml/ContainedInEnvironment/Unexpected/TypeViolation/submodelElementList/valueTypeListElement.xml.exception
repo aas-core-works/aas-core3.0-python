@@ -1,0 +1,1 @@
+environment/submodels/*[0]/submodelElements/*[0]/valueTypeListElement: Expected the end element for '{https://admin-shell.io/aas/3/0}valueTypeListElement', but got the event 'start' and element '{https://admin-shell.io/aas/3/0}reference'

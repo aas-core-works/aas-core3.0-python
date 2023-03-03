@@ -1,0 +1,1 @@
+assetAdministrationShells[0].assetInformation.defaultThumbnail.path: Expected a str, but got: <class 'list'>

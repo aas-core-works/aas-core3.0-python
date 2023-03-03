@@ -1,0 +1,24 @@
+{
+  "submodels": [
+    {
+      "id": "something_48c66017",
+      "idShort": "something_f8c8ea97",
+      "modelType": "Submodel",
+      "submodelElements": [
+        {
+          "first": {
+            "keys": [
+              {
+                "type": "GlobalReference",
+                "value": "urn:another-company01:f390f801"
+              }
+            ],
+            "type": "ExternalReference"
+          },
+          "idShort": "something3fdd3eb4",
+          "modelType": "RelationshipElement"
+        }
+      ]
+    }
+  ]
+}

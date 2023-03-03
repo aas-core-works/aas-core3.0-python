@@ -1,0 +1,1 @@
+.submodels[0].submodel_elements[0].value: Constraint AASd-126: For model references with more than one key in keys the value of type of the last key in the reference key chain may be one of Generic Fragment Keys or no key at all shall have a value out of Generic Fragment Keys.

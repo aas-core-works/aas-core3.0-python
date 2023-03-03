@@ -1,0 +1,1 @@
+assetAdministrationShells[0].administration.revision: Expected a str, but got: <class 'list'>

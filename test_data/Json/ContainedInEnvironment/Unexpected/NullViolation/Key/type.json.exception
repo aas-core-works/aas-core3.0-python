@@ -1,0 +1,1 @@
+assetAdministrationShells[0].derivedFrom.keys[0].type: Expected a str, but got: {type(jsonable)}

@@ -1,0 +1,8 @@
+black==22.10.0
+mypy==0.982
+pylint==2.15.4
+coverage>=6.5.0,<7
+pyinstaller>=5<6
+twine
+aas-core-meta@git+https://github.com/aas-core-works/aas-core-meta@9ccd31e#egg=aas-core-meta
+aas-core-codegen@git+https://github.com/aas-core-works/aas-core-codegen@0f287d2#egg=aas-core-codegen
