@@ -2491,7 +2491,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
                             or (
                                 not (
                                     any(
-                                        qualifier.kind
+                                        qualifier.kind_or_default()
                                         == aas_types.QualifierKind.TEMPLATE_QUALIFIER
                                         for qualifier in submodel_element.qualifiers
                                     )
@@ -2517,7 +2517,8 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             or (
                 not (
                     any(
-                        qualifier.kind == aas_types.QualifierKind.TEMPLATE_QUALIFIER
+                        qualifier.kind_or_default()
+                        == aas_types.QualifierKind.TEMPLATE_QUALIFIER
                         for qualifier in that.qualifiers
                     )
                 )
