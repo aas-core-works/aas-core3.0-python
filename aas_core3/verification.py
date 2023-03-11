@@ -2483,24 +2483,20 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         if not (
             not (that.submodel_elements is not None)
             or (
-                not (that.kind == aas_types.ModellingKind.TEMPLATE)
-                or (
-                    not (
-                        any(
-                            not (submodel_element.qualifiers is not None)
-                            or (
-                                not (
-                                    any(
-                                        qualifier.kind_or_default()
-                                        == aas_types.QualifierKind.TEMPLATE_QUALIFIER
-                                        for qualifier in submodel_element.qualifiers
-                                    )
-                                )
+                not (
+                    any(
+                        not (submodel_element.qualifiers is not None)
+                        or (
+                            any(
+                                qualifier.kind_or_default()
+                                == aas_types.QualifierKind.TEMPLATE_QUALIFIER
+                                for qualifier in submodel_element.qualifiers
                             )
-                            for submodel_element in that.submodel_elements
                         )
+                        for submodel_element in that.submodel_elements
                     )
                 )
+                or (that.kind == aas_types.ModellingKind.TEMPLATE)
             )
         ):
             yield Error(
