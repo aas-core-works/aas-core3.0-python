@@ -1,0 +1,1 @@
+assetAdministrationShells[0].embeddedDataSpecifications[0].dataSpecificationContent.valueList.valueReferencePairs[0].value: Expected a str, but got: <class 'NoneType'>

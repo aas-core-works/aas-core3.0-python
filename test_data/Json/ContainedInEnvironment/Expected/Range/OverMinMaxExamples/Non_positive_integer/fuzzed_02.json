@@ -1,0 +1,18 @@
+{
+  "submodels": [
+    {
+      "id": "something_48c66017",
+      "idShort": "something_f8c8ea97",
+      "modelType": "Submodel",
+      "submodelElements": [
+        {
+          "idShort": "something3fdd3eb4",
+          "max": "-8908938",
+          "min": "-8908938",
+          "modelType": "Range",
+          "valueType": "xs:nonPositiveInteger"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+submodels[0].submodelElements[0].contentType: Expected a str, but got: <class 'NoneType'>

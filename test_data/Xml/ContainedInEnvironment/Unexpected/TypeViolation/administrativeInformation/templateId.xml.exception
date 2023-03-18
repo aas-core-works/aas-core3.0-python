@@ -1,0 +1,1 @@
+environment/assetAdministrationShells/*[0]/administration/templateId: Expected the end element for '{https://admin-shell.io/aas/3/0}templateId', but got the event 'start' and element '{https://admin-shell.io/aas/3/0}reference'

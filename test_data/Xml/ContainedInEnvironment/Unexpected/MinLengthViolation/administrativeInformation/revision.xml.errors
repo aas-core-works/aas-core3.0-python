@@ -1,0 +1,2 @@
+.asset_administration_shells[0].administration.revision: The value must not be empty.
+.asset_administration_shells[0].administration.revision: Revision type shall match the revision pattern.

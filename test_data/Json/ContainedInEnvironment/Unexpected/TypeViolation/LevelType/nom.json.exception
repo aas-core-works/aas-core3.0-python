@@ -1,0 +1,1 @@
+assetAdministrationShells[0].embeddedDataSpecifications[0].dataSpecificationContent.levelType.nom: Expected a bool, but got: <class 'list'>

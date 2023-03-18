@@ -1,0 +1,17 @@
+{
+  "submodels": [
+    {
+      "id": "something_48c66017",
+      "idShort": "something_f8c8ea97",
+      "modelType": "Submodel",
+      "submodelElements": [
+        {
+          "idShort": "something3fdd3eb4",
+          "modelType": "Property",
+          "value": "http://datypic.com#frag1#frag2",
+          "valueType": "xs:anyURI"
+        }
+      ]
+    }
+  ]
+}

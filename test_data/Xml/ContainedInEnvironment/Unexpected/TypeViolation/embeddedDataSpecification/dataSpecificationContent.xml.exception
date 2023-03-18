@@ -1,0 +1,1 @@
+environment/assetAdministrationShells/*[0]/embeddedDataSpecifications/*[0]/dataSpecificationContent/reference: Expected the element tag to be a valid model type of a concrete instance of 'DataSpecificationContent', but got tag 'reference'

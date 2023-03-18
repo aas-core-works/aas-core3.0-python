@@ -1,0 +1,1 @@
+assetAdministrationShells[0].description[0].text: Expected a str, but got: <class 'list'>

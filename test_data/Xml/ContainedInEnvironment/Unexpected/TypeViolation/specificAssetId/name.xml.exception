@@ -1,0 +1,1 @@
+environment/assetAdministrationShells/*[0]/assetInformation/specificAssetIds/*[0]/name: Expected the end element for '{https://admin-shell.io/aas/3/0}name', but got the event 'start' and element '{https://admin-shell.io/aas/3/0}reference'

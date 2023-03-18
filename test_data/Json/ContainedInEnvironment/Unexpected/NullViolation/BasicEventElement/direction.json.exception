@@ -1,0 +1,1 @@
+submodels[0].submodelElements[0].direction: Expected a str, but got: {type(jsonable)}

@@ -1,0 +1,2 @@
+.asset_administration_shells[0].administration.version: Version type shall match the version pattern.
+.asset_administration_shells[0].administration.version: Version type shall have a maximum length of 4 characters.

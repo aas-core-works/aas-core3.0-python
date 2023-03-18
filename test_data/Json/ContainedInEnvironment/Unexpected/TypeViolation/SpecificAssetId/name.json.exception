@@ -1,0 +1,1 @@
+assetAdministrationShells[0].assetInformation.specificAssetIds[0].name: Expected a str, but got: <class 'list'>

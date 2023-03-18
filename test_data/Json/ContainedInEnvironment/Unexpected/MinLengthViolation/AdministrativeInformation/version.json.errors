@@ -1,0 +1,2 @@
+.asset_administration_shells[0].administration.version: The value must not be empty.
+.asset_administration_shells[0].administration.version: Version type shall match the version pattern.
