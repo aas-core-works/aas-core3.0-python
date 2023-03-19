@@ -1,6 +1,7 @@
 """Provide functionality used across development scripts."""
 
 import io
+import os
 import pathlib
 
 from aas_core_codegen.common import Stripped
@@ -17,6 +18,9 @@ from icontract import require
 import aas_core3
 
 AAS_MODULE = aas_core_codegen.python.common.QualifiedModuleName(aas_core3.__name__)
+
+
+REPO_ROOT = pathlib.Path(os.path.realpath(__file__)).parent.parent.parent
 
 
 def load_symbol_table() -> intermediate.SymbolTable:
