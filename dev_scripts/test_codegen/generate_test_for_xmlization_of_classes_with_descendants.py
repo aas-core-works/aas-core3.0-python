@@ -22,21 +22,20 @@ from aas_core_codegen.python.common import (
     INDENT3 as III,
 )
 
-import dev_scripts.common
+import dev_scripts.test_codegen.common
 
 
 def main() -> int:
     """Execute the main routine."""
-    symbol_table = dev_scripts.common.load_symbol_table()
+    symbol_table = dev_scripts.test_codegen.common.load_symbol_table()
 
     this_path = pathlib.Path(os.path.realpath(__file__))
-    repo_root = this_path.parent.parent
 
-    warning = dev_scripts.common.generate_warning_comment(
-        this_path.relative_to(repo_root)
+    warning = dev_scripts.test_codegen.common.generate_warning_comment(
+        this_path.relative_to(dev_scripts.test_codegen.common.REPO_ROOT)
     )
 
-    aas_module = dev_scripts.common.AAS_MODULE
+    aas_module = dev_scripts.test_codegen.common.AAS_MODULE
 
     blocks = [
         warning,
@@ -221,7 +220,10 @@ if __name__ == "__main__":
 
     writer.write("\n")
 
-    target_pth = repo_root / "tests/test_xmlization_of_classes_with_descendants.py"
+    target_pth = (
+        dev_scripts.test_codegen.common.REPO_ROOT
+        / "tests/test_xmlization_of_classes_with_descendants.py"
+    )
     target_pth.write_text(writer.getvalue(), encoding="utf-8")
 
     return 0

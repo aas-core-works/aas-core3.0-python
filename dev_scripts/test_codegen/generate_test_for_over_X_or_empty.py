@@ -21,24 +21,23 @@ from aas_core_codegen.python.common import (
     INDENT3 as III,
 )
 
-import dev_scripts.common
-import dev_scripts.test_data_io
+import dev_scripts.test_codegen.common
+import dev_scripts.test_codegen.test_data_io
 
 
 def main() -> int:
     """Execute the main routine."""
-    symbol_table = dev_scripts.common.load_symbol_table()
+    symbol_table = dev_scripts.test_codegen.common.load_symbol_table()
 
     this_path = pathlib.Path(os.path.realpath(__file__))
-    repo_root = this_path.parent.parent
 
-    test_data_dir = repo_root / "test_data"
+    test_data_dir = dev_scripts.test_codegen.common.REPO_ROOT / "test_data"
 
-    warning = dev_scripts.common.generate_warning_comment(
-        this_path.relative_to(repo_root)
+    warning = dev_scripts.test_codegen.common.generate_warning_comment(
+        this_path.relative_to(dev_scripts.test_codegen.common.REPO_ROOT)
     )
 
-    aas_module = dev_scripts.common.AAS_MODULE
+    aas_module = dev_scripts.test_codegen.common.AAS_MODULE
 
     blocks = [
         warning,
@@ -73,11 +72,11 @@ import tests.common_jsonization"""
             aas_core_codegen.common.Identifier(f"load_minimal_{our_type.name}")
         )
 
-        maximal_instance = dev_scripts.test_data_io.load_maximal(
+        maximal_instance = dev_scripts.test_codegen.test_data_io.load_maximal(
             test_data_dir=test_data_dir, cls=our_type
         )
 
-        minimal_instance = dev_scripts.test_data_io.load_minimal(
+        minimal_instance = dev_scripts.test_codegen.test_data_io.load_minimal(
             test_data_dir=test_data_dir, cls=our_type
         )
 
@@ -224,7 +223,9 @@ if __name__ == "__main__":
 
     writer.write("\n")
 
-    target_pth = repo_root / "tests/test_over_x_or_empty.py"
+    target_pth = (
+        dev_scripts.test_codegen.common.REPO_ROOT / "tests/test_over_x_or_empty.py"
+    )
     target_pth.write_text(writer.getvalue(), encoding="utf-8")
 
     return 0
