@@ -22,6 +22,7 @@ Here is an example snippet:
     environment = aas_types.Environment(
         submodels=[
             aas_types.Submodel(
+                id_short="someIdShort",
                 id="some-unique-global-identifier",
                 submodel_elements=[
                     aas_types.Property(
@@ -43,7 +44,7 @@ Expected output:
 
 .. testoutput::
 
-    <environment xmlns="https://admin-shell.io/aas/3/0"><submodels><submodel><id>some-unique-global-identifier</id><submodelElements><property><idShort>some_property</idShort><valueType>xs:int</valueType><value>1984</value></property></submodelElements></submodel></submodels></environment>
+    <environment xmlns="https://admin-shell.io/aas/3/0"><submodels><submodel><idShort>someIdShort</idShort><id>some-unique-global-identifier</id><submodelElements><property><idShort>some_property</idShort><valueType>xs:int</valueType><value>1984</value></property></submodelElements></submodel></submodels></environment>
 
 
 De-serialize
@@ -64,7 +65,9 @@ Here is a snippet which parses XML as text and then de-serializes it into an ins
 
     text = (
         "<environment xmlns=\"https://admin-shell.io/aas/3/0\">" +
-        "<submodels><submodel><id>some-unique-global-identifier</id>" +
+        "<submodels><submodel>" +
+        "<idShort>someIdShort</idShort>"
+        "<id>some-unique-global-identifier</id>" +
         "<submodelElements><property><idShort>someProperty</idShort>" +
         "<valueType>xs:boolean</valueType></property></submodelElements>" +
         "</submodel></submodels></environment>"

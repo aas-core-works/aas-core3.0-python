@@ -60,6 +60,7 @@ The submodel will contain two elements, a property and a blob.
 
     # Nest the elements in a submodel
     submodel = aas_types.Submodel(
+        id_short="someIdShort",
         id="some-unique-global-identifier",
         submodel_elements=[
             some_element,
@@ -72,7 +73,7 @@ The submodel will contain two elements, a property and a blob.
         submodels=[submodel]
     )
 
-    # You can access the propreties from the children as well.
+    # You can access the properties from the children as well.
     environment.submodels[0].submodel_elements[1].value = b'\xC0\x01\xCA\xFE'
 
     # Now you can do something with the environment...

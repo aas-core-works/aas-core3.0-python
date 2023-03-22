@@ -19,8 +19,8 @@ Here is a short example snippet:
     environment = aas_types.Environment(
         submodels=[
             aas_types.Submodel(
+                id_short="someIdShort",
                 id="some-unique-global-identifier",
-                id_short="someIdentifier",
                 submodel_elements=[
                     aas_types.Property(
                         # The ID-shorts must be proper variable names,
