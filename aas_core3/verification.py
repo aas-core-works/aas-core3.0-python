@@ -2103,13 +2103,6 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         ):
             yield Error("Display name specifies no duplicate languages.")
 
-        if not (that.id_short is not None):
-            yield Error(
-                "Constraint AASd-117: ID-short of Referables not being "
-                + "a direct child of a Submodel element list shall be "
-                + "specified."
-            )
-
         if not (
             not (that.embedded_data_specifications is not None)
             or (len(that.embedded_data_specifications) >= 1)
@@ -2156,10 +2149,9 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
                 error.path._prepend(PropertySegment(that, "category"))
                 yield error
 
-        if that.id_short is not None:
-            for error in verify_id_short_type(that.id_short):
-                error.path._prepend(PropertySegment(that, "id_short"))
-                yield error
+        for error in verify_id_short_type(that.id_short):
+            error.path._prepend(PropertySegment(that, "id_short"))
+            yield error
 
         if that.display_name is not None:
             for i, another_item in enumerate(that.display_name):
@@ -2400,13 +2392,6 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         ):
             yield Error("Display name specifies no duplicate languages.")
 
-        if not (that.id_short is not None):
-            yield Error(
-                "Constraint AASd-117: ID-short of Referables not being "
-                + "a direct child of a Submodel element list shall be "
-                + "specified."
-            )
-
         if not (
             not (that.supplemental_semantic_ids is not None)
             or (len(that.supplemental_semantic_ids) >= 1)
@@ -2536,10 +2521,9 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
                 error.path._prepend(PropertySegment(that, "category"))
                 yield error
 
-        if that.id_short is not None:
-            for error in verify_id_short_type(that.id_short):
-                error.path._prepend(PropertySegment(that, "id_short"))
-                yield error
+        for error in verify_id_short_type(that.id_short):
+            error.path._prepend(PropertySegment(that, "id_short"))
+            yield error
 
         if that.display_name is not None:
             for i, another_item in enumerate(that.display_name):
@@ -2682,13 +2666,6 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             yield Error(
                 "Embedded data specifications must be either not set or have "
                 + "at least one item."
-            )
-
-        if not (that.id_short is not None):
-            yield Error(
-                "Constraint AASd-117: ID-short of Referables not being "
-                + "a direct child of a Submodel element list shall be "
-                + "specified."
             )
 
         if that.extensions is not None:
@@ -4237,13 +4214,6 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
                 + "at least one item."
             )
 
-        if not (that.id_short is not None):
-            yield Error(
-                "Constraint AASd-117: ID-short of Referables not being "
-                + "a direct child of a Submodel element list shall be "
-                + "specified."
-            )
-
         if not (not (that.annotations is not None) or (len(that.annotations) >= 1)):
             yield Error(
                 "Annotations must be either not set or have at least one " + "item."
@@ -4691,13 +4661,6 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             yield Error(
                 "Embedded data specifications must be either not set or have "
                 + "at least one item."
-            )
-
-        if not (that.id_short is not None):
-            yield Error(
-                "Constraint AASd-117: ID-short of Referables not being "
-                + "a direct child of a Submodel element list shall be "
-                + "specified."
             )
 
         if not (
@@ -5202,13 +5165,6 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         ):
             yield Error("Display name specifies no duplicate languages.")
 
-        if not (that.id_short is not None):
-            yield Error(
-                "Constraint AASd-117: ID-short of Referables not being "
-                + "a direct child of a Submodel element list shall be "
-                + "specified."
-            )
-
         if not (
             not (that.embedded_data_specifications is not None)
             or (len(that.embedded_data_specifications) >= 1)
@@ -5332,10 +5288,9 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
                 error.path._prepend(PropertySegment(that, "category"))
                 yield error
 
-        if that.id_short is not None:
-            for error in verify_id_short_type(that.id_short):
-                error.path._prepend(PropertySegment(that, "id_short"))
-                yield error
+        for error in verify_id_short_type(that.id_short):
+            error.path._prepend(PropertySegment(that, "id_short"))
+            yield error
 
         if that.display_name is not None:
             for i, another_item in enumerate(that.display_name):

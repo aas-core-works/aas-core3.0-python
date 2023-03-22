@@ -22,6 +22,7 @@ Here is a snippet that converts the environment first into a JSON-able mapping, 
     environment = aas_types.Environment(
         submodels=[
             aas_types.Submodel(
+                id_short="someIdShort",
                 id="some-unique-global-identifier",
                 submodel_elements=[
                     aas_types.Property(
@@ -47,6 +48,7 @@ Expected output:
     {
       "submodels": [
         {
+          "idShort": "someIdShort",
           "id": "some-unique-global-identifier",
           "submodelElements": [
             {
@@ -80,6 +82,7 @@ Here is an example snippet:
         {
           "submodels": [
             {
+              "idShort": "someIdShort",
               "id": "some-unique-global-identifier",
               "submodelElements": [
                 {
