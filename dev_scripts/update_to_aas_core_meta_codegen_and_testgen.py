@@ -256,7 +256,7 @@ def _replace_test_data(
 
     for pth in [
         test_data_dir / name
-        for name in ("descend", "descendOnce", "Json", "xOrDefault")
+        for name in ("descend", "descendOnce", "Json", "Xml", "xOrDefault")
     ]:
         if pth.exists():
             print(f"Removing {pth} ...")
@@ -264,11 +264,12 @@ def _replace_test_data(
 
     print(f"Copying the test data from: {aas_core_testgen_repo} ...")
 
-    pth = aas_core_testgen_repo / "test_data/Json"
-    target_pth = test_data_dir / pth.name
-    assert not target_pth.exists()
-    assert pth.exists(), f"Expected the test data directory to exist: {pth=}"
-    shutil.copytree(pth, target_pth)
+    for name in ("Json", "Xml"):
+        pth = aas_core_testgen_repo / "test_data" / name
+        target_pth = test_data_dir / pth.name
+        assert not target_pth.exists()
+        assert pth.exists(), f"Expected the test data directory to exist: {pth=}"
+        shutil.copytree(pth, target_pth)
 
 
 def _reformat_code(our_repo: pathlib.Path) -> None:

@@ -58,7 +58,13 @@ class Test_Extension(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -232,7 +238,13 @@ class Test_AdministrativeInformation(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -406,7 +418,13 @@ class Test_Qualifier(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -580,7 +598,13 @@ class Test_AssetAdministrationShell(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -754,7 +778,13 @@ class Test_AssetInformation(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -928,7 +958,13 @@ class Test_Resource(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -1102,7 +1138,13 @@ class Test_SpecificAssetID(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -1276,7 +1318,13 @@ class Test_Submodel(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -1450,7 +1498,13 @@ class Test_RelationshipElement(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -1624,7 +1678,13 @@ class Test_SubmodelElementList(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -1798,7 +1858,13 @@ class Test_SubmodelElementCollection(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -1972,7 +2038,13 @@ class Test_Property(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -2146,7 +2218,13 @@ class Test_MultiLanguageProperty(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -2320,7 +2398,13 @@ class Test_Range(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -2494,7 +2578,13 @@ class Test_ReferenceElement(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -2668,7 +2758,13 @@ class Test_Blob(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -2842,7 +2938,13 @@ class Test_File(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -3016,7 +3118,13 @@ class Test_AnnotatedRelationshipElement(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -3190,7 +3298,13 @@ class Test_Entity(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -3364,7 +3478,13 @@ class Test_EventPayload(unittest.TestCase):
 
             errors = list(aas_verification.verify(instance))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(instance, writer)
@@ -3540,7 +3660,13 @@ class Test_BasicEventElement(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -3714,7 +3840,13 @@ class Test_Operation(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -3888,7 +4020,13 @@ class Test_OperationVariable(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -4062,7 +4200,13 @@ class Test_Capability(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -4236,7 +4380,13 @@ class Test_ConceptDescription(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -4410,7 +4560,13 @@ class Test_Reference(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -4584,7 +4740,13 @@ class Test_Key(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -4758,7 +4920,13 @@ class Test_LangStringNameType(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -4932,7 +5100,13 @@ class Test_LangStringTextType(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -5106,7 +5280,13 @@ class Test_Environment(unittest.TestCase):
 
             errors = list(aas_verification.verify(instance))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(instance, writer)
@@ -5280,7 +5460,13 @@ class Test_EmbeddedDataSpecification(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -5454,7 +5640,13 @@ class Test_LevelType(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -5628,7 +5820,13 @@ class Test_ValueReferencePair(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -5802,7 +6000,13 @@ class Test_ValueList(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -5976,7 +6180,13 @@ class Test_LangStringPreferredNameTypeIEC61360(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -6150,7 +6360,13 @@ class Test_LangStringShortNameTypeIEC61360(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -6324,7 +6540,13 @@ class Test_LangStringDefinitionTypeIEC61360(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)
@@ -6498,7 +6720,13 @@ class Test_DataSpecificationIEC61360(unittest.TestCase):
 
             errors = list(aas_verification.verify(container))
 
-            self.assertListEqual([], errors, f"path is {path}")
+            if len(errors) > 0:
+                errors_joined = "\n\n".join(
+                    f"{error.path}: {error.cause}" for error in errors
+                )
+                raise AssertionError(
+                    f"One or more unexpected errors from {path}:\n{errors_joined}"
+                )
 
             writer = io.StringIO()
             aas_xmlization.write(container, writer)

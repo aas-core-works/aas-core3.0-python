@@ -10900,9 +10900,6 @@ def _read_asset_administration_shell_as_sequence(
             exception.path._prepend(ElementSegment(next_element))
             raise
 
-    if reader_and_setter.id_short is None:
-        raise DeserializationException("The required property 'idShort' is missing")
-
     if reader_and_setter.id is None:
         raise DeserializationException("The required property 'id' is missing")
 
@@ -10912,11 +10909,11 @@ def _read_asset_administration_shell_as_sequence(
         )
 
     return aas_types.AssetAdministrationShell(
-        reader_and_setter.id_short,
         reader_and_setter.id,
         reader_and_setter.asset_information,
         reader_and_setter.extensions,
         reader_and_setter.category,
+        reader_and_setter.id_short,
         reader_and_setter.display_name,
         reader_and_setter.description,
         reader_and_setter.administration,
@@ -12020,17 +12017,14 @@ def _read_submodel_as_sequence(
             exception.path._prepend(ElementSegment(next_element))
             raise
 
-    if reader_and_setter.id_short is None:
-        raise DeserializationException("The required property 'idShort' is missing")
-
     if reader_and_setter.id is None:
         raise DeserializationException("The required property 'id' is missing")
 
     return aas_types.Submodel(
-        reader_and_setter.id_short,
         reader_and_setter.id,
         reader_and_setter.extensions,
         reader_and_setter.category,
+        reader_and_setter.id_short,
         reader_and_setter.display_name,
         reader_and_setter.description,
         reader_and_setter.administration,
@@ -20027,17 +20021,14 @@ def _read_concept_description_as_sequence(
             exception.path._prepend(ElementSegment(next_element))
             raise
 
-    if reader_and_setter.id_short is None:
-        raise DeserializationException("The required property 'idShort' is missing")
-
     if reader_and_setter.id is None:
         raise DeserializationException("The required property 'id' is missing")
 
     return aas_types.ConceptDescription(
-        reader_and_setter.id_short,
         reader_and_setter.id,
         reader_and_setter.extensions,
         reader_and_setter.category,
+        reader_and_setter.id_short,
         reader_and_setter.display_name,
         reader_and_setter.description,
         reader_and_setter.administration,
@@ -23954,7 +23945,8 @@ class _Serializer(aas_types.AbstractVisitor):
         if that.category is not None:
             self._write_str_property("category", that.category)
 
-        self._write_str_property("idShort", that.id_short)
+        if that.id_short is not None:
+            self._write_str_property("idShort", that.id_short)
 
         if that.display_name is not None:
             if len(that.display_name) == 0:
@@ -24180,7 +24172,8 @@ class _Serializer(aas_types.AbstractVisitor):
         if that.category is not None:
             self._write_str_property("category", that.category)
 
-        self._write_str_property("idShort", that.id_short)
+        if that.id_short is not None:
+            self._write_str_property("idShort", that.id_short)
 
         if that.display_name is not None:
             if len(that.display_name) == 0:
@@ -25899,7 +25892,8 @@ class _Serializer(aas_types.AbstractVisitor):
         if that.category is not None:
             self._write_str_property("category", that.category)
 
-        self._write_str_property("idShort", that.id_short)
+        if that.id_short is not None:
+            self._write_str_property("idShort", that.id_short)
 
         if that.display_name is not None:
             if len(that.display_name) == 0:

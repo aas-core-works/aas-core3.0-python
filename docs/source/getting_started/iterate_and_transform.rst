@@ -37,7 +37,6 @@ Here is a short example how you can get all the properties from an environment w
     environment = aas_types.Environment(
         submodels=[
             aas_types.Submodel(
-                id_short="someIdShort",
                 id="some-unique-global-identifier",
                 submodel_elements=[
                     aas_types.Property(
@@ -115,7 +114,6 @@ Let us re-write the above example related to :py:meth:`~aas_core3.types.Class.de
     environment = aas_types.Environment(
         submodels=[
             aas_types.Submodel(
-                id_short="someIdShort",
                 id="some-unique-global-identifier",
                 submodel_elements=[
                     aas_types.Property(
