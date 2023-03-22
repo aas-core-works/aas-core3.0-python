@@ -60,7 +60,6 @@ The submodel will contain two elements, a property and a blob.
 
     # Nest the elements in a submodel
     submodel = aas_types.Submodel(
-        id_short="someIdShort",
         id="some-unique-global-identifier",
         submodel_elements=[
             some_element,

@@ -99,7 +99,14 @@ def test_ok(self) -> None:
 
 {II}errors = list(aas_verification.verify({target_variable}))
 
-{II}self.assertListEqual([], errors, f"path is {{path}}")
+{II}if len(errors) > 0:
+{III}errors_joined = "\\n\\n".join(
+{IIII}f"{{error.path}}: {{error.cause}}"
+{IIII}for error in errors
+{III})
+{III}raise AssertionError(
+{IIII}f"One or more unexpected errors from {{path}}:\\n{{errors_joined}}"
+{III})
 
 {II}writer = io.StringIO()
 {II}aas_xmlization.write({target_variable}, writer)
