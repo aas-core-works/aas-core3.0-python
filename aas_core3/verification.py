@@ -2216,7 +2216,8 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
                         specific_asset_id.name != "globalAssetId"
                         or (
                             (
-                                specific_asset_id.name == "globalAssetId"
+                                (that.global_asset_id is not None)
+                                and specific_asset_id.name == "globalAssetId"
                                 and specific_asset_id.value == that.global_asset_id
                             )
                         )
@@ -2465,7 +2466,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         if not (
             not (that.submodel_elements is not None)
             or (
-                not (that.kind != aas_types.ModellingKind.TEMPLATE)
+                not (that.kind_or_default() != aas_types.ModellingKind.TEMPLATE)
                 or (
                     all(
                         not (submodel_element.qualifiers is not None)
@@ -5695,7 +5696,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         if not (
             not (
                 (
-                    (that.data_type is None)
+                    (that.data_type is not None)
                     and (that.data_type in aas_constants.IEC_61360_DATA_TYPES_WITH_UNIT)
                 )
             )

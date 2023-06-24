@@ -1,1 +1,1 @@
-environment/submodels/*[0]/submodelElements/*[0]/inputVariables/*[0]/value/reference: Expected the element tag to be a valid model type of a concrete instance of 'SubmodelElement', but got tag 'reference'
+environment/submodels/*[0]/submodelElements/*[0]/inputVariables/*[0]/value: Expected a discriminator start element corresponding to SubmodelElement, but got event 'end' and element '{https://admin-shell.io/aas/3/0}value'

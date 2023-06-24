@@ -1,1 +1,1 @@
-sourceSemanticId: Expected a mapping, but got: <class 'list'>
+sourceSemanticId: Expected a mapping, but got: <class 'str'>

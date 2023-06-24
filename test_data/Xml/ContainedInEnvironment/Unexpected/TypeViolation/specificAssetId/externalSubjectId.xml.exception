@@ -1,1 +1,1 @@
-environment/assetAdministrationShells/*[0]/assetInformation/specificAssetIds/*[0]/externalSubjectId/reference: Expected an element representing a property, but got an element with unexpected tag: 'reference'
+environment/assetAdministrationShells/*[0]/assetInformation/specificAssetIds/*[0]/externalSubjectId: Expected only XML elements representing the properties and whitespace text, but got text: 'Unexpected string value'

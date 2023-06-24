@@ -1,1 +1,1 @@
-assetAdministrationShells[0].assetInformation.specificAssetIds[0].semanticId: Expected a mapping, but got: <class 'list'>
+assetAdministrationShells[0].assetInformation.specificAssetIds[0].semanticId: Expected a mapping, but got: <class 'str'>

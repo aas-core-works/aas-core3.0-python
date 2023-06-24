@@ -1,1 +1,1 @@
-eventPayload/source/reference: Expected an element representing a property, but got an element with unexpected tag: 'reference'
+eventPayload/source: Expected only XML elements representing the properties and whitespace text, but got text: 'Unexpected string value'
