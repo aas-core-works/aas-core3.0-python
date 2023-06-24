@@ -1,1 +1,1 @@
-subjectId: Expected a mapping, but got: <class 'list'>
+subjectId: Expected a mapping, but got: <class 'str'>

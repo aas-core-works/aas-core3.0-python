@@ -1,1 +1,1 @@
-environment/assetAdministrationShells/*[0]/embeddedDataSpecifications/*[0]/dataSpecificationContent/reference: Expected the element tag to be a valid model type of a concrete instance of 'DataSpecificationContent', but got tag 'reference'
+environment/assetAdministrationShells/*[0]/embeddedDataSpecifications/*[0]/dataSpecificationContent: Expected a discriminator start element corresponding to DataSpecificationContent, but got event 'end' and element '{https://admin-shell.io/aas/3/0}dataSpecificationContent'

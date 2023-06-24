@@ -1,1 +1,1 @@
-environment/submodels/*[0]/submodelElements/*[0]/semanticIdListElement/reference: Expected an element representing a property, but got an element with unexpected tag: 'reference'
+environment/submodels/*[0]/submodelElements/*[0]/semanticIdListElement: Expected only XML elements representing the properties and whitespace text, but got text: 'Unexpected string value'
