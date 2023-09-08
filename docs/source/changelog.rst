@@ -2,6 +2,22 @@
 Change Log
 **********
 
+1.0.0rc3 (2023-09-08)
+=====================
+* Update to aas-core-meta, codegen, testgen 4d7e59e, 18986a0, and
+  9b43de2e (#12)
+
+  In this version, we fix:
+
+  * Constraints AASc-3a-010 and AASd-131, propagated from aas-core-meta
+    pull requests 281 and 280, respectively.
+
+  We also add the following minor feature:
+
+  * Add ```__repr__`` to ```verification.Error`` to facilitate
+    debugging in the downstream clients. Propagated from
+    aas-core-codegen pull request 400.
+
 1.0.0rc2 (2023-06-28)
 =====================
 * Update to aas-core-meta, codegen, testgen 44756fb, 607f65c,
