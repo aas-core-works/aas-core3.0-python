@@ -122,6 +122,9 @@ class Error:
         self.cause = cause
         self.path = Path()
 
+    def __repr__(self) -> str:
+        return f"Error(path={self.path}, cause={self.cause})"
+
 
 # noinspection SpellCheckingInspection
 def _construct_matches_id_short() -> Pattern[str]:
@@ -2238,15 +2241,12 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
                 (
                     (
                         (that.global_asset_id is not None)
-                        and (that.specific_asset_ids is None)
+                        or (that.specific_asset_ids is not None)
                     )
                 )
-                or (
-                    (
-                        (that.global_asset_id is None)
-                        and (that.specific_asset_ids is not None)
-                        and len(that.specific_asset_ids) >= 1
-                    )
+                and (
+                    not (that.specific_asset_ids is not None)
+                    or (len(that.specific_asset_ids) >= 1)
                 )
             )
         ):
@@ -5676,18 +5676,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
     def transform_data_specification_iec_61360(
         self, that: aas_types.DataSpecificationIEC61360
     ) -> Iterator[Error]:
-        if not (
-            (
-                (((that.value is not None) and (that.value_list is None)))
-                or (
-                    (
-                        (that.value is None)
-                        and (that.value_list is not None)
-                        and len(that.value_list.value_reference_pairs) >= 1
-                    )
-                )
-            )
-        ):
+        if not (not (((that.value is not None) and (that.value_list is not None)))):
             yield Error(
                 "Constraint AASc-3a-010: If value is not empty then value "
                 + "list shall be empty and vice versa."
