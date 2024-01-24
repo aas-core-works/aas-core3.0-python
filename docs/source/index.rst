@@ -15,6 +15,7 @@ Table of Contents
    :maxdepth: 1
 
    api/index
+   design_decisions
    contributing
    changelog
 
