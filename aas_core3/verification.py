@@ -2093,7 +2093,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -2104,7 +2104,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.embedded_data_specifications is not None)
@@ -2381,7 +2381,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -2392,7 +2392,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -2619,7 +2619,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -2630,7 +2630,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -2769,7 +2769,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -2780,7 +2780,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -3013,7 +3013,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -3024,7 +3024,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -3177,7 +3177,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -3188,7 +3188,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -3345,7 +3345,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -3356,7 +3356,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -3411,7 +3411,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.value is not None)
             or lang_strings_have_unique_languages(that.value)
         ):
-            yield Error("Value specifies no duplicate languages.")
+            yield Error("Value must specify unique languages.")
 
         if not (not (that.value is not None) or (len(that.value) >= 1)):
             yield Error("Value must be either not set or have at least one item.")
@@ -3516,7 +3516,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -3527,7 +3527,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -3690,7 +3690,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -3701,7 +3701,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -3845,7 +3845,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -3856,7 +3856,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -4004,7 +4004,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -4015,7 +4015,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -4165,7 +4165,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -4176,7 +4176,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -4336,7 +4336,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -4347,7 +4347,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -4615,7 +4615,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -4626,7 +4626,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -4799,7 +4799,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -4810,7 +4810,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -5014,7 +5014,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -5025,7 +5025,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.supplemental_semantic_ids is not None)
@@ -5156,7 +5156,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.description is not None)
             or lang_strings_have_unique_languages(that.description)
         ):
-            yield Error("Description specifies no duplicate languages.")
+            yield Error("Description must specify unique languages.")
 
         if not (not (that.display_name is not None) or (len(that.display_name) >= 1)):
             yield Error(
@@ -5167,7 +5167,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.display_name is not None)
             or lang_strings_have_unique_languages(that.display_name)
         ):
-            yield Error("Display name specifies no duplicate languages.")
+            yield Error("Display name must specify unique languages.")
 
         if not (
             not (that.embedded_data_specifications is not None)
@@ -5632,7 +5632,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         self, that: aas_types.LangStringPreferredNameTypeIEC61360
     ) -> Iterator[Error]:
         if not (len(that.text) <= 255):
-            yield Error("String shall have a maximum length of 1023 characters.")
+            yield Error("String shall have a maximum length of 255 characters.")
 
         for error in verify_bcp_47_language_tag(that.language):
             error.path._prepend(PropertySegment(that, "language"))
@@ -5647,7 +5647,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         self, that: aas_types.LangStringShortNameTypeIEC61360
     ) -> Iterator[Error]:
         if not (len(that.text) <= 18):
-            yield Error("String shall have a maximum length of 1023 characters.")
+            yield Error("String shall have a maximum length of 18 characters.")
 
         for error in verify_bcp_47_language_tag(that.language):
             error.path._prepend(PropertySegment(that, "language"))
@@ -5704,7 +5704,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.definition is not None)
             or lang_strings_have_unique_languages(that.definition)
         ):
-            yield Error("Definition specifies no duplicate languages.")
+            yield Error("Definition must specify unique languages.")
 
         if not (not (that.short_name is not None) or (len(that.short_name) >= 1)):
             yield Error("Short name must be either not set or have at least one item.")
@@ -5713,13 +5713,13 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             not (that.short_name is not None)
             or lang_strings_have_unique_languages(that.short_name)
         ):
-            yield Error("Short name specifies no duplicate languages.")
+            yield Error("Short name must specify unique languages.")
 
         if not (len(that.preferred_name) >= 1):
             yield Error("Preferred name must have at least one item.")
 
         if not (lang_strings_have_unique_languages(that.preferred_name)):
-            yield Error("Preferred name specifies no duplicate languages.")
+            yield Error("Preferred name must specify unique languages.")
 
         if not (
             any(

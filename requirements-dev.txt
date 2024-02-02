@@ -4,5 +4,5 @@ pylint==2.15.4
 coverage>=6.5.0,<7
 pyinstaller>=5<6
 twine
-aas-core-meta@git+https://github.com/aas-core-works/aas-core-meta@4d7e59e#egg=aas-core-meta
-aas-core-codegen@git+https://github.com/aas-core-works/aas-core-codegen@18986a0#egg=aas-core-codegen
+aas-core-meta@git+https://github.com/aas-core-works/aas-core-meta@c9692bc#egg=aas-core-meta
+aas-core-codegen@git+https://github.com/aas-core-works/aas-core-codegen@256cc8a#egg=aas-core-codegen
