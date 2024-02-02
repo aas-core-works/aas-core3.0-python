@@ -2,6 +2,12 @@
 Change Log
 **********
 
+1.0.0 (2024-02-02)
+==================
+This is the first stable release. The release candidates stood
+the test of time, so we are now confident to publish a stable
+version.
+
 1.0.0rc3 (2023-09-08)
 =====================
 * Update to aas-core-meta, codegen, testgen 4d7e59e, 18986a0, and
