@@ -2,6 +2,19 @@
 Change Log
 **********
 
+1.0.1 (2024-02-14)
+==================
+* Test and fix for text attached to end XML elements (#18).
+
+  This patch fixes for the edge case where ElementTree's
+  ```XMLPullParser`` attaches the text to the end element instead of
+  the start element. Previously, some XML files were wrongly reported
+  as incorrect.
+
+  We do not know what causes this different behavior of the parser,
+  but suspect that it has something to do with the size of the parser's
+  buffer.
+
 1.0.0 (2024-02-02)
 ==================
 This is the first stable release. The release candidates stood
