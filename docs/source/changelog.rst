@@ -2,6 +2,14 @@
 Change Log
 **********
 
+1.0.2 (2024-03-13)
+==================
+* Update to aas-core-meta, codegen, testgen 79314c6, 94399e1, e1087880 (#20)
+
+  This patch release brings about the fix for patterns concerning dates and
+  date-times with zone offset `14:00` which previously allowed for
+  a concatenation without a plus sign.
+
 1.0.1 (2024-02-14)
 ==================
 * Test and fix for text attached to end XML elements (#18).
