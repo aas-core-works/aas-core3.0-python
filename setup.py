@@ -19,7 +19,7 @@ with open(os.path.join(here, "README.rst"), encoding="utf-8") as fid:
 setup(
     name="aas-core3.0",
     # Synchronize with __init__.py and changelog.rst!
-    version="1.0.1",
+    version="1.0.2",
     description="Manipulate, verify and de/serialize Asset Administration Shells.",
     long_description=long_description,
     url="https://github.com/aas-core-works/aas-core3.0-python",
