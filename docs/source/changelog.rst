@@ -2,6 +2,13 @@
 Change Log
 **********
 
+1.0.3 (2024-03-22)
+==================
+* Update to aas-core-meta, codegen, testgen cb28d18, c414f32, 6ff39c260 (#23)
+
+  We propagate the fix from abnf-to-regex related to maximum qualifiers
+  which had been mistakenly represented as exact repetition before.
+
 1.0.2 (2024-03-13)
 ==================
 * Update to aas-core-meta, codegen, testgen 79314c6, 94399e1, e1087880 (#20)
