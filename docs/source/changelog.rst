@@ -2,6 +2,11 @@
 Change Log
 **********
 
+1.0.4 (2024-04-16)
+==================
+The ``dataSpecification`` field in ``EmbeddedDataSpecification`` is made
+optional, according to the book.
+
 1.0.3 (2024-03-22)
 ==================
 * Update to aas-core-meta, codegen, testgen cb28d18, c414f32, 6ff39c260 (#23)
