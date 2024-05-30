@@ -20,17 +20,6 @@ import tests.common
 import tests.common_jsonization
 
 
-#: List of identifiers for serialization failures (corresponding to subdirectory names
-#: in the directory with test data)
-_CAUSES_FOR_DESERIALIZATION_FAILURE = [
-    "TypeViolation",
-    "RequiredViolation",
-    "EnumViolation",
-    "NullViolation",
-    "UnexpectedAdditionalProperty",
-]
-
-
 class Test_Extension(unittest.TestCase):
     """
     Test JSON de/serialization of the concrete class
@@ -90,84 +79,78 @@ class Test_Extension(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Extension"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Extension/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Extension`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Extension"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Extension/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Extension`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_AdministrativeInformation(unittest.TestCase):
@@ -229,84 +212,78 @@ class Test_AdministrativeInformation(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "AdministrativeInformation"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/AdministrativeInformation/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AdministrativeInformation`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "AdministrativeInformation"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/AdministrativeInformation/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AdministrativeInformation`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Qualifier(unittest.TestCase):
@@ -368,84 +345,78 @@ class Test_Qualifier(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Qualifier"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Qualifier/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Qualifier`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Qualifier"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Qualifier/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Qualifier`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_AssetAdministrationShell(unittest.TestCase):
@@ -507,84 +478,78 @@ class Test_AssetAdministrationShell(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "AssetAdministrationShell"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/AssetAdministrationShell/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AssetAdministrationShell`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "AssetAdministrationShell"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/AssetAdministrationShell/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AssetAdministrationShell`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_AssetInformation(unittest.TestCase):
@@ -646,84 +611,78 @@ class Test_AssetInformation(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "AssetInformation"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/AssetInformation/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AssetInformation`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "AssetInformation"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/AssetInformation/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AssetInformation`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Resource(unittest.TestCase):
@@ -785,84 +744,78 @@ class Test_Resource(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Resource"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Resource/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Resource`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Resource"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Resource/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Resource`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_SpecificAssetID(unittest.TestCase):
@@ -924,84 +877,78 @@ class Test_SpecificAssetID(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "SpecificAssetId"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/SpecificAssetId/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SpecificAssetID`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "SpecificAssetId"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/SpecificAssetId/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SpecificAssetID`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Submodel(unittest.TestCase):
@@ -1063,84 +1010,78 @@ class Test_Submodel(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Submodel"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Submodel/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Submodel`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Submodel"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Submodel/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Submodel`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_RelationshipElement(unittest.TestCase):
@@ -1202,84 +1143,78 @@ class Test_RelationshipElement(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "RelationshipElement"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/RelationshipElement/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.RelationshipElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "RelationshipElement"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/RelationshipElement/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.RelationshipElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_SubmodelElementList(unittest.TestCase):
@@ -1341,84 +1276,78 @@ class Test_SubmodelElementList(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "SubmodelElementList"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/SubmodelElementList/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SubmodelElementList`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "SubmodelElementList"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/SubmodelElementList/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SubmodelElementList`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_SubmodelElementCollection(unittest.TestCase):
@@ -1480,84 +1409,78 @@ class Test_SubmodelElementCollection(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "SubmodelElementCollection"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/SubmodelElementCollection/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SubmodelElementCollection`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "SubmodelElementCollection"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/SubmodelElementCollection/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SubmodelElementCollection`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Property(unittest.TestCase):
@@ -1619,84 +1542,78 @@ class Test_Property(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Property"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Property/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Property`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Property"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Property/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Property`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_MultiLanguageProperty(unittest.TestCase):
@@ -1758,84 +1675,78 @@ class Test_MultiLanguageProperty(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "MultiLanguageProperty"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/MultiLanguageProperty/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.MultiLanguageProperty`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "MultiLanguageProperty"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/MultiLanguageProperty/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.MultiLanguageProperty`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Range(unittest.TestCase):
@@ -1897,84 +1808,78 @@ class Test_Range(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Range"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Range/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Range`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Range"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Range/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Range`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_ReferenceElement(unittest.TestCase):
@@ -2036,84 +1941,78 @@ class Test_ReferenceElement(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "ReferenceElement"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/ReferenceElement/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ReferenceElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "ReferenceElement"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/ReferenceElement/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ReferenceElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Blob(unittest.TestCase):
@@ -2175,84 +2074,78 @@ class Test_Blob(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Blob"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Blob/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Blob`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Blob"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Blob/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Blob`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_File(unittest.TestCase):
@@ -2314,84 +2207,78 @@ class Test_File(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "File"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/File/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.File`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "File"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/File/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.File`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_AnnotatedRelationshipElement(unittest.TestCase):
@@ -2453,84 +2340,78 @@ class Test_AnnotatedRelationshipElement(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "AnnotatedRelationshipElement"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/AnnotatedRelationshipElement/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AnnotatedRelationshipElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "AnnotatedRelationshipElement"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/AnnotatedRelationshipElement/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AnnotatedRelationshipElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Entity(unittest.TestCase):
@@ -2592,84 +2473,78 @@ class Test_Entity(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Entity"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Entity/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Entity`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Entity"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Entity/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Entity`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_EventPayload(unittest.TestCase):
@@ -2731,84 +2606,78 @@ class Test_EventPayload(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "SelfContained"
-                / "Unexpected"
-                / cause
-                / "EventPayload"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "SelfContained"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/EventPayload/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.event_payload_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.EventPayload`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.event_payload_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "SelfContained"
-                / "Unexpected"
-                / cause
-                / "EventPayload"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "SelfContained"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/EventPayload/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                instance = aas_jsonization.event_payload_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(instance))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.EventPayload`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    instance = aas_jsonization.event_payload_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(instance))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_BasicEventElement(unittest.TestCase):
@@ -2870,84 +2739,78 @@ class Test_BasicEventElement(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "BasicEventElement"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/BasicEventElement/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.BasicEventElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "BasicEventElement"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/BasicEventElement/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.BasicEventElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Operation(unittest.TestCase):
@@ -3009,84 +2872,78 @@ class Test_Operation(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Operation"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Operation/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Operation`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Operation"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Operation/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Operation`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_OperationVariable(unittest.TestCase):
@@ -3148,84 +3005,78 @@ class Test_OperationVariable(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "OperationVariable"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/OperationVariable/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.OperationVariable`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "OperationVariable"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/OperationVariable/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.OperationVariable`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Capability(unittest.TestCase):
@@ -3287,84 +3138,78 @@ class Test_Capability(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Capability"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Capability/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Capability`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Capability"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Capability/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Capability`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_ConceptDescription(unittest.TestCase):
@@ -3426,84 +3271,78 @@ class Test_ConceptDescription(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "ConceptDescription"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/ConceptDescription/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ConceptDescription`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "ConceptDescription"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/ConceptDescription/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ConceptDescription`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Reference(unittest.TestCase):
@@ -3565,84 +3404,78 @@ class Test_Reference(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Reference"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Reference/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Reference`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Reference"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Reference/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Reference`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Key(unittest.TestCase):
@@ -3704,84 +3537,78 @@ class Test_Key(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Key"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Key/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Key`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "Key"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Key/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Key`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_LangStringNameType(unittest.TestCase):
@@ -3843,84 +3670,78 @@ class Test_LangStringNameType(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringNameType"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringNameType/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringNameType`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringNameType"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringNameType/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringNameType`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_LangStringTextType(unittest.TestCase):
@@ -3982,84 +3803,78 @@ class Test_LangStringTextType(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringTextType"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringTextType/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringTextType`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringTextType"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringTextType/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringTextType`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_Environment(unittest.TestCase):
@@ -4121,84 +3936,78 @@ class Test_Environment(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "SelfContained"
-                / "Unexpected"
-                / cause
-                / "Environment"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "SelfContained"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Environment/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Environment`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "SelfContained"
-                / "Unexpected"
-                / cause
-                / "Environment"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "SelfContained"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/Environment/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                instance = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(instance))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Environment`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    instance = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(instance))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_EmbeddedDataSpecification(unittest.TestCase):
@@ -4260,84 +4069,78 @@ class Test_EmbeddedDataSpecification(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "EmbeddedDataSpecification"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/EmbeddedDataSpecification/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.EmbeddedDataSpecification`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "EmbeddedDataSpecification"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/EmbeddedDataSpecification/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.EmbeddedDataSpecification`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_LevelType(unittest.TestCase):
@@ -4399,84 +4202,78 @@ class Test_LevelType(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LevelType"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LevelType/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LevelType`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LevelType"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LevelType/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LevelType`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_ValueReferencePair(unittest.TestCase):
@@ -4538,84 +4335,78 @@ class Test_ValueReferencePair(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "ValueReferencePair"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/ValueReferencePair/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ValueReferencePair`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "ValueReferencePair"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/ValueReferencePair/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ValueReferencePair`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_ValueList(unittest.TestCase):
@@ -4677,84 +4468,78 @@ class Test_ValueList(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "ValueList"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/ValueList/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ValueList`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "ValueList"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/ValueList/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ValueList`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_LangStringPreferredNameTypeIEC61360(unittest.TestCase):
@@ -4816,84 +4601,78 @@ class Test_LangStringPreferredNameTypeIEC61360(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringPreferredNameTypeIec61360"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringPreferredNameTypeIec61360/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringPreferredNameTypeIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringPreferredNameTypeIec61360"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringPreferredNameTypeIec61360/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringPreferredNameTypeIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_LangStringShortNameTypeIEC61360(unittest.TestCase):
@@ -4955,84 +4734,78 @@ class Test_LangStringShortNameTypeIEC61360(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringShortNameTypeIec61360"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringShortNameTypeIec61360/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringShortNameTypeIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringShortNameTypeIec61360"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringShortNameTypeIec61360/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringShortNameTypeIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_LangStringDefinitionTypeIEC61360(unittest.TestCase):
@@ -5094,84 +4867,78 @@ class Test_LangStringDefinitionTypeIEC61360(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringDefinitionTypeIec61360"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringDefinitionTypeIec61360/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringDefinitionTypeIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "LangStringDefinitionTypeIec61360"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/LangStringDefinitionTypeIec61360/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringDefinitionTypeIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 class Test_DataSpecificationIEC61360(unittest.TestCase):
@@ -5233,84 +5000,78 @@ class Test_DataSpecificationIEC61360(unittest.TestCase):
         self.assertEqual("", str(observed_exception.path))
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "DataSpecificationIec61360"
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/DataSpecificationIec61360/**/*.json"
+
+        paths = sorted(unserializable_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            observed_exception: Optional[
+                aas_jsonization.DeserializationException
+            ] = None
+
+            try:
+                _ = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
             )
-
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.DataSpecificationIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                observed_exception: Optional[
-                    aas_jsonization.DeserializationException
-                ] = None
-
-                try:
-                    _ = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    observed_exception = exception
-
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
-                )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Json"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "DataSpecificationIec61360"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Json"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/DataSpecificationIec61360/**/*.json"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            with path.open("rt") as fid:
+                jsonable = json.load(fid)
+
+            try:
+                container = aas_jsonization.environment_from_jsonable(jsonable)
+            except aas_jsonization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Expected no deserialization exception from {path}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.DataSpecificationIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.json")):
-                with path.open("rt") as fid:
-                    jsonable = json.load(fid)
-
-                try:
-                    container = aas_jsonization.environment_from_jsonable(jsonable)
-                except aas_jsonization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Expected no deserialization exception from {path}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
 
 if __name__ == "__main__":

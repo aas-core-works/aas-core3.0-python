@@ -3,7 +3,7 @@
 # Do NOT edit or append.
 
 
-"""Test JSON de/serialization of concrete classes."""
+"""Test XML de/serialization of concrete classes."""
 
 
 # pylint: disable=missing-docstring
@@ -19,14 +19,6 @@ import aas_core3.verification as aas_verification
 
 import tests.common
 import tests.common_xmlization
-
-
-_CAUSES_FOR_DESERIALIZATION_FAILURE = [
-    "TypeViolation",
-    "RequiredViolation",
-    "EnumViolation",
-    "UnexpectedAdditionalProperty",
-]
 
 
 class Test_Extension(unittest.TestCase):
@@ -81,83 +73,75 @@ class Test_Extension(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "extension"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Extension`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/extension/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "extension"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/extension/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Extension`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -261,83 +245,75 @@ class Test_AdministrativeInformation(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "administrativeInformation"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AdministrativeInformation`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/administrativeInformation/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "administrativeInformation"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/administrativeInformation/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AdministrativeInformation`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -441,83 +417,75 @@ class Test_Qualifier(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "qualifier"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Qualifier`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/qualifier/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "qualifier"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/qualifier/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Qualifier`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -621,83 +589,75 @@ class Test_AssetAdministrationShell(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "assetAdministrationShell"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AssetAdministrationShell`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/assetAdministrationShell/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "assetAdministrationShell"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/assetAdministrationShell/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AssetAdministrationShell`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -801,83 +761,75 @@ class Test_AssetInformation(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "assetInformation"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AssetInformation`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/assetInformation/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "assetInformation"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/assetInformation/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AssetInformation`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -981,83 +933,75 @@ class Test_Resource(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "resource"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Resource`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/resource/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "resource"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/resource/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Resource`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -1161,83 +1105,75 @@ class Test_SpecificAssetID(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "specificAssetId"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SpecificAssetID`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/specificAssetId/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "specificAssetId"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/specificAssetId/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SpecificAssetID`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -1341,83 +1277,75 @@ class Test_Submodel(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "submodel"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Submodel`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/submodel/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "submodel"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/submodel/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Submodel`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -1521,83 +1449,75 @@ class Test_RelationshipElement(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "relationshipElement"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.RelationshipElement`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/relationshipElement/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "relationshipElement"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/relationshipElement/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.RelationshipElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -1701,83 +1621,75 @@ class Test_SubmodelElementList(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "submodelElementList"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SubmodelElementList`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/submodelElementList/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "submodelElementList"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/submodelElementList/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SubmodelElementList`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -1881,83 +1793,75 @@ class Test_SubmodelElementCollection(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "submodelElementCollection"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SubmodelElementCollection`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/submodelElementCollection/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "submodelElementCollection"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/submodelElementCollection/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.SubmodelElementCollection`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -2061,83 +1965,75 @@ class Test_Property(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "property"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Property`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/property/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "property"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/property/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Property`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -2241,83 +2137,75 @@ class Test_MultiLanguageProperty(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "multiLanguageProperty"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.MultiLanguageProperty`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/multiLanguageProperty/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "multiLanguageProperty"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/multiLanguageProperty/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.MultiLanguageProperty`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -2421,83 +2309,75 @@ class Test_Range(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "range"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Range`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/range/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "range"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/range/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Range`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -2601,83 +2481,75 @@ class Test_ReferenceElement(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "referenceElement"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ReferenceElement`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/referenceElement/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "referenceElement"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/referenceElement/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ReferenceElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -2781,83 +2653,75 @@ class Test_Blob(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "blob"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Blob`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/blob/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "blob"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/blob/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Blob`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -2961,83 +2825,75 @@ class Test_File(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "file"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.File`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/file/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "file"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/file/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.File`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -3141,83 +2997,75 @@ class Test_AnnotatedRelationshipElement(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "annotatedRelationshipElement"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AnnotatedRelationshipElement`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/annotatedRelationshipElement/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "annotatedRelationshipElement"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/annotatedRelationshipElement/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.AnnotatedRelationshipElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -3321,83 +3169,75 @@ class Test_Entity(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "entity"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Entity`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/entity/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "entity"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/entity/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Entity`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -3501,83 +3341,75 @@ class Test_EventPayload(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "SelfContained"
-                / "Unexpected"
-                / cause
-                / "eventPayload"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "SelfContained"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.EventPayload`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/eventPayload/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.event_payload_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.event_payload_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "SelfContained"
-                / "Unexpected"
-                / cause
-                / "eventPayload"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "SelfContained"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/eventPayload/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                instance = aas_xmlization.event_payload_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(instance))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.EventPayload`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    instance = aas_xmlization.event_payload_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(instance))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -3683,83 +3515,75 @@ class Test_BasicEventElement(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "basicEventElement"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.BasicEventElement`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/basicEventElement/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "basicEventElement"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/basicEventElement/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.BasicEventElement`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -3863,83 +3687,75 @@ class Test_Operation(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "operation"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Operation`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/operation/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "operation"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/operation/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Operation`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -4043,83 +3859,75 @@ class Test_OperationVariable(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "operationVariable"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.OperationVariable`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/operationVariable/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "operationVariable"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/operationVariable/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.OperationVariable`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -4223,83 +4031,75 @@ class Test_Capability(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "capability"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Capability`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/capability/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "capability"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/capability/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Capability`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -4403,83 +4203,75 @@ class Test_ConceptDescription(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "conceptDescription"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ConceptDescription`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/conceptDescription/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "conceptDescription"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/conceptDescription/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ConceptDescription`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -4583,83 +4375,75 @@ class Test_Reference(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "reference"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Reference`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/reference/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "reference"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/reference/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Reference`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -4763,83 +4547,75 @@ class Test_Key(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "key"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Key`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/key/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "key"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/key/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Key`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -4943,83 +4719,75 @@ class Test_LangStringNameType(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringNameType"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringNameType`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringNameType/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringNameType"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringNameType/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringNameType`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -5123,83 +4891,75 @@ class Test_LangStringTextType(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringTextType"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringTextType`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringTextType/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringTextType"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringTextType/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringTextType`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -5303,83 +5063,75 @@ class Test_Environment(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "SelfContained"
-                / "Unexpected"
-                / cause
-                / "environment"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "SelfContained"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Environment`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/environment/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "SelfContained"
-                / "Unexpected"
-                / cause
-                / "environment"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "SelfContained"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/environment/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                instance = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(instance))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.Environment`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    instance = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(instance))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -5483,83 +5235,75 @@ class Test_EmbeddedDataSpecification(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "embeddedDataSpecification"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.EmbeddedDataSpecification`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/embeddedDataSpecification/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "embeddedDataSpecification"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/embeddedDataSpecification/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.EmbeddedDataSpecification`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -5663,83 +5407,75 @@ class Test_LevelType(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "levelType"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LevelType`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/levelType/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "levelType"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/levelType/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LevelType`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -5843,83 +5579,75 @@ class Test_ValueReferencePair(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "valueReferencePair"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ValueReferencePair`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/valueReferencePair/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "valueReferencePair"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/valueReferencePair/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ValueReferencePair`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -6023,83 +5751,75 @@ class Test_ValueList(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "valueList"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ValueList`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/valueList/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "valueList"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/valueList/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.ValueList`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -6203,83 +5923,75 @@ class Test_LangStringPreferredNameTypeIEC61360(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringPreferredNameTypeIec61360"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringPreferredNameTypeIEC61360`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringPreferredNameTypeIec61360/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringPreferredNameTypeIec61360"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringPreferredNameTypeIec61360/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringPreferredNameTypeIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -6383,83 +6095,75 @@ class Test_LangStringShortNameTypeIEC61360(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringShortNameTypeIec61360"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringShortNameTypeIEC61360`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringShortNameTypeIec61360/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringShortNameTypeIec61360"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringShortNameTypeIec61360/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringShortNameTypeIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -6563,83 +6267,75 @@ class Test_LangStringDefinitionTypeIEC61360(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringDefinitionTypeIec61360"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringDefinitionTypeIEC61360`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringDefinitionTypeIec61360/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "langStringDefinitionTypeIec61360"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/langStringDefinitionTypeIec61360/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.LangStringDefinitionTypeIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(
@@ -6743,83 +6439,75 @@ class Test_DataSpecificationIEC61360(unittest.TestCase):
             )
 
     def test_deserialization_failures(self) -> None:
-        for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "dataSpecificationIec61360"
-            )
+        unserializable_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Unserializable"
+        )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.DataSpecificationIEC61360`
-                # and this ``cause``.
-                continue
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/dataSpecificationIec61360/**/*.xml"
 
-            for path in sorted(base_dir.glob("**/*.xml")):
-                observed_exception: Optional[
-                    aas_xmlization.DeserializationException
-                ] = None
+        paths = sorted(unserializable_dir.glob(glob_pattern))
 
-                try:
-                    _ = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    observed_exception = exception
+        for path in paths:
+            observed_exception: Optional[aas_xmlization.DeserializationException] = None
 
-                assert (
-                    observed_exception is not None
-                ), f"Expected an exception, but got none for: {path}"
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".exception"),
-                    got=f"{observed_exception.path}: {observed_exception.cause}",
+            try:
+                _ = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
                 )
+            except aas_xmlization.DeserializationException as exception:
+                observed_exception = exception
+
+            assert (
+                observed_exception is not None
+            ), f"Expected an exception, but got none for: {path}"
+
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".exception"),
+                got=f"{observed_exception.path}: {observed_exception.cause}",
+            )
 
     def test_verification_failures(self) -> None:
-        for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-            base_dir = (
-                tests.common.TEST_DATA_DIR
-                / "Xml"
-                / "ContainedInEnvironment"
-                / "Unexpected"
-                / cause
-                / "dataSpecificationIec61360"
+        invalid_dir = (
+            tests.common.TEST_DATA_DIR
+            / "Xml"
+            / "ContainedInEnvironment"
+            / "Unexpected"
+            / "Invalid"
+        )
+
+        # The first ``*`` corresponds to the cause.
+        glob_pattern = "*/dataSpecificationIec61360/**/*.xml"
+
+        paths = sorted(invalid_dir.glob(glob_pattern))
+
+        for path in paths:
+            try:
+                container = aas_xmlization.environment_from_str(
+                    path.read_text(encoding="utf-8")
+                )
+            except aas_xmlization.DeserializationException as exception:
+                raise AssertionError(
+                    f"Unexpected failure in deserialization from {path} "
+                    f"at {exception.path}: {exception.cause}"
+                ) from exception
+
+            errors = list(aas_verification.verify(container))
+
+            self.assertGreater(
+                len(errors),
+                0,
+                f"Expected verification errors from {path}, but got none",
             )
 
-            if not base_dir.exists():
-                # There are no failure cases
-                # for :py:class:`aas_core3.types.DataSpecificationIEC61360`
-                # and this ``cause``.
-                continue
-
-            for path in sorted(base_dir.glob("**/*.xml")):
-                try:
-                    container = aas_xmlization.environment_from_str(
-                        path.read_text(encoding="utf-8")
-                    )
-                except aas_xmlization.DeserializationException as exception:
-                    raise AssertionError(
-                        f"Unexpected failure in deserialization from {path} "
-                        f"at {exception.path}: {exception.cause}"
-                    ) from exception
-
-                errors = list(aas_verification.verify(container))
-
-                self.assertGreater(
-                    len(errors),
-                    0,
-                    f"Expected verification errors from {path}, but got none",
-                )
-
-                tests.common.record_or_check(
-                    path=path.parent / (path.name + ".errors"),
-                    got="\n".join(f"{error.path}: {error.cause}" for error in errors),
-                )
+            tests.common.record_or_check(
+                path=path.parent / (path.name + ".errors"),
+                got="\n".join(f"{error.path}: {error.cause}" for error in errors),
+            )
 
     def test_different_input_forms_give_equal_outcomes(self) -> None:
         paths = sorted(

@@ -34,8 +34,10 @@ def _generate_test_case(
     aas_module: aas_core_codegen.python.common.QualifiedModuleName,
 ) -> Stripped:
     """Generate the test class for a self-contained class."""
+    xml_class_name = aas_core_codegen.naming.xml_class_name(cls.name)
+
     xml_class_name_literal = aas_core_codegen.python.common.string_literal(
-        aas_core_codegen.naming.xml_class_name(cls.name)
+        xml_class_name
     )
 
     from_str = aas_core_codegen.python.naming.function_name(
@@ -127,88 +129,83 @@ def test_ok(self) -> None:
         Stripped(
             f"""\
 def test_deserialization_failures(self) -> None:
-{I}for cause in _CAUSES_FOR_DESERIALIZATION_FAILURE:
-{II}base_dir = (
-{III}tests.common.TEST_DATA_DIR
-{III}/ "Xml"
-{III}/ {container_kind_literal}
-{III}/ "Unexpected"
-{III}/ cause
-{III}/ {xml_class_name_literal}
+{I}unserializable_dir = (
+{II}tests.common.TEST_DATA_DIR
+{II}/ "Xml"
+{II}/ {container_kind_literal}
+{II}/ "Unexpected"
+{II}/ "Unserializable"
+{I})
+
+{I}# The first ``*`` corresponds to the cause.
+{I}glob_pattern = "*/{xml_class_name}/**/*.xml"
+
+{I}paths = sorted(unserializable_dir.glob(glob_pattern))
+
+{I}for path in paths:
+{II}observed_exception: Optional[
+{III}aas_xmlization.DeserializationException
+{II}] = None
+
+{II}try:
+{III}_ = aas_xmlization.{from_str}(
+{IIII}path.read_text(encoding='utf-8')
+{III})
+{II}except aas_xmlization.DeserializationException as exception:
+{III}observed_exception = exception
+
+{II}assert observed_exception is not None, (
+{III}f"Expected an exception, but got none for: {{path}}"
 {II})
 
-{II}if not base_dir.exists():
-{III}# There are no failure cases
-{III}# for :py:class:`{aas_module}.types.{cls_name}`
-{III}# and this ``cause``.
-{III}continue
-
-{II}for path in sorted(base_dir.glob("**/*.xml")):
-{III}observed_exception: Optional[
-{IIII}aas_xmlization.DeserializationException
-{III}] = None
-
-{III}try:
-{IIII}_ = aas_xmlization.{from_str}(
-{IIIII}path.read_text(encoding='utf-8')
-{IIII})
-{III}except aas_xmlization.DeserializationException as exception:
-{IIII}observed_exception = exception
-
-{III}assert observed_exception is not None, (
-{IIII}f"Expected an exception, but got none for: {{path}}"
-{III})
-
-{III}tests.common.record_or_check(
-{IIII}path=path.parent / (path.name + ".exception"),
-{IIII}got=f"{{observed_exception.path}}: {{observed_exception.cause}}"
-{III})"""
+{II}tests.common.record_or_check(
+{III}path=path.parent / (path.name + ".exception"),
+{III}got=f"{{observed_exception.path}}: {{observed_exception.cause}}"
+{II})"""
         ),
         Stripped(
             f"""\
 def test_verification_failures(self) -> None:
-{I}for cause in tests.common.CAUSES_FOR_VERIFICATION_FAILURE:
-{II}base_dir = (
-{III}tests.common.TEST_DATA_DIR
-{III}/ "Xml"
-{III}/ {container_kind_literal}
-{III}/ "Unexpected"
-{III}/ cause
-{III}/ {xml_class_name_literal}
+{I}invalid_dir = (
+{II}tests.common.TEST_DATA_DIR
+{II}/ "Xml"
+{II}/ {container_kind_literal}
+{II}/ "Unexpected"
+{II}/ "Invalid"
+{I})
+
+{I}# The first ``*`` corresponds to the cause.
+{I}glob_pattern = "*/{xml_class_name}/**/*.xml"
+
+
+{I}paths = sorted(invalid_dir.glob(glob_pattern))
+
+{I}for path in paths:
+{II}try:
+{III}{target_variable} = aas_xmlization.{from_str}(
+{IIII}path.read_text(encoding='utf-8')
+{III})
+{II}except aas_xmlization.DeserializationException as exception:
+{III}raise AssertionError(
+{IIII}f"Unexpected failure in deserialization from {{path}} "
+{IIII}f"at {{exception.path}}: {{exception.cause}}"
+{III}) from exception
+
+{II}errors = list(aas_verification.verify({target_variable}))
+
+{II}self.assertGreater(
+{III}len(errors),
+{III}0,
+{III}f"Expected verification errors from {{path}}, but got none"
 {II})
 
-{II}if not base_dir.exists():
-{III}# There are no failure cases
-{III}# for :py:class:`{aas_module}.types.{cls_name}`
-{III}# and this ``cause``.
-{III}continue
-
-{II}for path in sorted(base_dir.glob("**/*.xml")):
-{III}try:
-{IIII}{target_variable} = aas_xmlization.{from_str}(
-{IIIII}path.read_text(encoding='utf-8')
-{IIII})
-{III}except aas_xmlization.DeserializationException as exception:
-{IIII}raise AssertionError(
-{IIIII}f"Unexpected failure in deserialization from {{path}} "
-{IIIII}f"at {{exception.path}}: {{exception.cause}}"
-{IIII}) from exception
-
-{III}errors = list(aas_verification.verify({target_variable}))
-
-{III}self.assertGreater(
-{IIII}len(errors),
-{IIII}0,
-{IIII}f"Expected verification errors from {{path}}, but got none"
+{II}tests.common.record_or_check(
+{III}path=path.parent / (path.name + ".errors"),
+{III}got="\\n".join(
+{IIII}f"{{error.path}}: {{error.cause}}"
+{IIII}for error in errors
 {III})
-
-{III}tests.common.record_or_check(
-{IIII}path=path.parent / (path.name + ".errors"),
-{IIII}got="\\n".join(
-{IIIII}f"{{error.path}}: {{error.cause}}"
-{IIIII}for error in errors
-{IIII})
-{III})"""
+{II})"""
         ),
         Stripped(
             f"""\
@@ -337,7 +334,7 @@ def main() -> int:
 
     blocks = [
         warning,
-        Stripped('"""Test JSON de/serialization of concrete classes."""'),
+        Stripped('"""Test XML de/serialization of concrete classes."""'),
         Stripped("# pylint: disable=missing-docstring"),
         Stripped(
             f"""\
@@ -351,15 +348,6 @@ import {aas_module}.verification as aas_verification
 
 import tests.common
 import tests.common_xmlization"""
-        ),
-        Stripped(
-            f"""\
-_CAUSES_FOR_DESERIALIZATION_FAILURE = [
-{I}"TypeViolation",
-{I}"RequiredViolation",
-{I}"EnumViolation",
-{I}"UnexpectedAdditionalProperty",
-]"""
         ),
     ]  # type: List[Stripped]
 

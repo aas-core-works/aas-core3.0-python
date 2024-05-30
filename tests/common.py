@@ -26,19 +26,6 @@ RECORD_MODE = os.environ.get("AAS_CORE3_0_PYTHON_TESTS_RECORD_MODE", "").lower()
     "true",
 )
 
-#: List of identifiers for verification failures (corresponding to subdirectory names
-#: in the directory with test data)
-CAUSES_FOR_VERIFICATION_FAILURE = [
-    "DateTimeStampUtcViolationOnFebruary29th",
-    "MaxLengthViolation",
-    "MinLengthViolation",
-    "PatternViolation",
-    "InvalidValueExample",
-    "InvalidMinMaxExample",
-    "SetViolation",
-    "ConstraintViolation",
-]
-
 
 def record_or_check(path: pathlib.Path, got: str) -> None:
     """
