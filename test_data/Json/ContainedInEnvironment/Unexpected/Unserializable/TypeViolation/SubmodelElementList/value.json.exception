@@ -1,1 +1,1 @@
-submodels[0].submodelElements[0].value[0]: Expected a mapping, but got: <class 'str'>
+submodels[0].submodelElements[0].value: Expected something array-like, but got: <class 'str'>

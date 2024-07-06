@@ -1,1 +1,1 @@
-conceptDescriptions[0].isCaseOf[0]: Expected a mapping, but got: <class 'str'>
+conceptDescriptions[0].isCaseOf: Expected something array-like, but got: <class 'str'>

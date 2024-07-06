@@ -1,1 +1,1 @@
-submodels[0]: Expected a mapping, but got: <class 'str'>
+submodels: Expected something array-like, but got: <class 'str'>
