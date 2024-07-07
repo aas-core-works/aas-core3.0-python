@@ -1,0 +1,1 @@
+submodels[0]: Invalid modelType, expected 'Submodel', but got: 'aCompletelyInvalidModelType'
