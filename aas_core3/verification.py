@@ -5591,10 +5591,9 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             error.path._prepend(PropertySegment(that, "data_specification_content"))
             yield error
 
-        if that.data_specification is not None:
-            for error in self.transform(that.data_specification):
-                error.path._prepend(PropertySegment(that, "data_specification"))
-                yield error
+        for error in self.transform(that.data_specification):
+            error.path._prepend(PropertySegment(that, "data_specification"))
+            yield error
 
     # noinspection PyMethodMayBeStatic
     def transform_level_type(self, that: aas_types.LevelType) -> Iterator[Error]:
@@ -5729,7 +5728,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             )
         ):
             yield Error(
-                "Constraint AASc-002: preferred name shall be provided at "
+                "Constraint AASc-3a-002: preferred name shall be provided at "
                 + "least in English."
             )
 
@@ -6021,12 +6020,6 @@ def verify_path_type(that: str) -> Iterator[Error]:
 
     if not (len(that) <= 2000):
         yield Error("Identifier shall have a maximum length of 2000 characters.")
-
-    if not matches_rfc_8089_path(that):
-        yield Error(
-            "The value must represent a valid file URI scheme according "
-            + "to RFC 8089."
-        )
 
 
 def verify_qualifier_type(that: str) -> Iterator[Error]:
