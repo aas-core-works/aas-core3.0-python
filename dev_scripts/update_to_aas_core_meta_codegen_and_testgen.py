@@ -599,11 +599,11 @@ def main() -> int:
         aas_core_codegen_repo=aas_core_codegen_repo, our_repo=our_repo
     )
 
+    _replace_test_data(our_repo=our_repo, aas_core_testgen_repo=aas_core_testgen_repo)
+
     exit_code = _generate_test_code(our_repo=our_repo)
     if exit_code is not None:
         return exit_code
-
-    _replace_test_data(our_repo=our_repo, aas_core_testgen_repo=aas_core_testgen_repo)
 
     _reformat_code(our_repo=our_repo)
 
