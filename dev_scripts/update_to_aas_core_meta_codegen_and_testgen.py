@@ -254,10 +254,7 @@ def _replace_test_data(
 
     print(f"Removing the test data from: {test_data_dir}")
 
-    for pth in [
-        test_data_dir / name
-        for name in ("descend", "descendOnce", "Json", "Xml", "xOrDefault")
-    ]:
+    for pth in [subpath for subpath in test_data_dir.iterdir() if subpath.is_dir()]:
         if pth.exists():
             print(f"Removing {pth} ...")
             shutil.rmtree(pth)
