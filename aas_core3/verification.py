@@ -2874,7 +2874,7 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         if not (
             not (
                 (
-                    (that.value is not None)
+                    (that.type_value_list_element is not None)
                     and (
                         (
                             that.type_value_list_element
@@ -2888,8 +2888,13 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
             or (
                 (
                     (that.value_type_list_element is not None)
-                    and properties_or_ranges_have_value_type(
-                        that.value, that.value_type_list_element
+                    and (
+                        (
+                            (that.value is None)
+                            or properties_or_ranges_have_value_type(
+                                that.value, that.value_type_list_element
+                            )
+                        )
                     )
                 )
             )
