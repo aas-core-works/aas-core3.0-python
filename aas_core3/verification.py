@@ -2874,15 +2874,10 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
         if not (
             not (
                 (
-                    (that.type_value_list_element is not None)
-                    and (
-                        (
-                            that.type_value_list_element
-                            == aas_types.AASSubmodelElements.PROPERTY
-                            or that.type_value_list_element
-                            == aas_types.AASSubmodelElements.RANGE
-                        )
-                    )
+                    that.type_value_list_element
+                    == aas_types.AASSubmodelElements.PROPERTY
+                    or that.type_value_list_element
+                    == aas_types.AASSubmodelElements.RANGE
                 )
             )
             or (
