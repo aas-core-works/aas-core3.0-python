@@ -28,5 +28,5 @@ The documentation is in the `docs/build` directory.
 Test the examples in the documentation with the ``doctest`` builder:
 
 ```
-sphinx-build source -b doctest
+sphinx-build source build -b doctest
 ```
