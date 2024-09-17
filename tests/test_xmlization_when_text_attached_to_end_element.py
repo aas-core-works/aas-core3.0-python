@@ -1,22 +1,26 @@
-"""
-Test the edge case when the ElementTree parser attaches the text to the end element.
-
-The quirky part is that the text is *sometimes* attached to the start element
-and *other times* to the end element. We could not figure out which situation
-occurs when.
-
-Please see also the note in the Python documentation:
-https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.XMLPullParser.read_events
-"""
+"""Test the edge cases with the ElementTree parser."""
 
 # pylint: disable=missing-docstring
-
+import io
 import unittest
+import xml.etree.ElementTree
+from typing import Tuple, Iterator
 
 import aas_core3.xmlization as aas_xmlization
 
 
-class TestOnXMLsFromTheWild(unittest.TestCase):
+class TestTextAttachedToAnEndElement(unittest.TestCase):
+    """
+    Test the edge case when the ElementTree attaches the text to the end element.
+
+    The quirky part is that the text is *sometimes* attached to the start element
+    and *other times* to the end element. We could not figure out which situation
+    occurs when.
+
+    Please see also the note in the Python documentation:
+    https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.XMLPullParser.read_events
+    """
+
     def test_on_a_large_file(self) -> None:
         # Please see:
         # https://github.com/aas-core-works/aas-core3.0-python/issues/17
@@ -640,6 +644,59 @@ class TestOnXMLsFromTheWild(unittest.TestCase):
         #
         # For example, if you change the indention of the XML, there would be no error.
         _ = aas_xmlization.environment_from_str(text)
+
+
+class TestOnXSIAttributes(unittest.TestCase):
+    """
+    Test how we can deal gracefully with common ``xsi:`` attributes.
+
+    The specification does not allow any XML attributes, but many applications simply
+    add ``xsi`` attributes by default.
+
+    See:
+    https://github.com/aas-core-works/aas-core3.0-python/issues/44
+    """
+
+    def test_pipeline_approach(self) -> None:
+        text = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<environment
+    xmlns="https://admin-shell.io/aas/3/0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://admin-shell.io/aas/3/0/AAS.xsd">
+</environment>
+"""
+
+        iterator = xml.etree.ElementTree.iterparse(
+            io.StringIO(text), events=("start", "end")
+        )
+
+        def with_attributes_removed(
+            an_iterator: Iterator[Tuple[str, xml.etree.ElementTree.Element]]
+        ) -> Iterator[Tuple[str, xml.etree.ElementTree.Element]]:
+            """
+            Map the :paramref:`iterator` such that all attributes are removed.
+
+            :param an_iterator: to be mapped
+            :yield: event and element without attributes from :paramref:`iterator`
+            """
+            for event, element in an_iterator:
+                element.attrib.clear()
+
+                yield event, element
+
+        environment = aas_xmlization.environment_from_iterparse(
+            iterator=with_attributes_removed(iterator)
+        )
+
+        # NOTE (mristin):
+        # The attributes are lost in the subsequent serialization.
+        serialization = aas_xmlization.to_str(environment)
+
+        self.assertEqual(
+            '<environment xmlns="https://admin-shell.io/aas/3/0"/>',
+            serialization,
+        )
 
 
 if __name__ == "__main__":

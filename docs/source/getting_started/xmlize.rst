@@ -88,3 +88,62 @@ Errors
 
 If the XML document comes in an unexpected form, our SDK throws a :py:class:`aas_core3.xmlization.DeserializationException`.
 This can happen, for example, if unexpected XML elements or XML attributes are encountered, or an expected XML element is missing.
+
+Disregarding XML Attributes
+===========================
+The specification mandates to use no XML attributes, but some libraries and tools still add their own XML attributes in the XML serialization of an AAS.
+You need to remove them to avoid de-serialization errors.
+
+To that end, you need to operate directly on an iterator of XML events and elements coming from :py:func:`xml.etree.ElementTree.iterparse`.
+The attributes need to be cleared as you iterate and re-yield over the iterator.
+
+Here is an example snippet:
+
+.. testcode::
+
+    import io
+    import xml.etree.ElementTree
+    from typing import Tuple, Iterator
+
+    import aas_core3.xmlization as aas_xmlization
+
+    text = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<environment\n'
+        '    xmlns="https://admin-shell.io/aas/3/0"\n'
+        '    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n'
+        '    xsi:schemaLocation="https://admin-shell.io/aas/3/0/AAS.xsd">\n'
+        '</environment>\n'
+    )
+
+    iterator = xml.etree.ElementTree.iterparse(
+        io.StringIO(text),
+        # The XML de-serializer needs to operate on 'start' and 'end' events.
+        events=("start", "end")
+    )
+
+    def with_attributes_removed(
+            an_iterator: Iterator[Tuple[str, xml.etree.ElementTree.Element]]
+    ) -> Iterator[Tuple[str, xml.etree.ElementTree.Element]]:
+        """
+        Map the :paramref:`iterator` such that all attributes are removed.
+
+        :param an_iterator: to be mapped
+        :yield: event and element without attributes from :paramref:`iterator`
+        """
+        for event, element in an_iterator:
+            element.attrib.clear()
+
+            yield event, element
+
+    environment = aas_xmlization.environment_from_iterparse(
+        iterator=with_attributes_removed(iterator)
+    )
+
+    # The attributes are lost in the subsequent serialization.
+    serialization = aas_xmlization.to_str(environment)
+
+    assert (
+        '<environment xmlns="https://admin-shell.io/aas/3/0"/>'
+        == serialization
+    )
