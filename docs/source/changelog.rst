@@ -2,6 +2,12 @@
 Change Log
 **********
 
+1.1.0 (2024-10-27)
+==================
+We introduce additional functions which can de-serialize all model
+instances by determining the type based on the first start element and
+dispatching to the concrete de-serialization function accordingly.
+
 1.0.4 (2024-04-16)
 ==================
 The ``dataSpecification`` field in ``EmbeddedDataSpecification`` is made
