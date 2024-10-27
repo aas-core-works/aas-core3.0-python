@@ -83,6 +83,62 @@ Expected output:
     <class 'aas_core3.types.Submodel'>
     <class 'aas_core3.types.Property'>
 
+You can also de-serialize other model classes other than ``Environment``.
+For example, to de-serialize a submodel, you can use :py:func:`aas_core3.xmlization.submodel_from_str`:
+
+.. testcode::
+
+    import aas_core3.xmlization as aas_xmlization
+
+    text = (
+        "<submodel xmlns=\"https://admin-shell.io/aas/3/0\">" +
+        "<id>some-unique-global-identifier</id>" +
+        "<submodelElements><property><idShort>someProperty</idShort>" +
+        "<valueType>xs:boolean</valueType></property></submodelElements>" +
+        "</submodel>"
+    )
+
+    submodel = aas_xmlization.submodel_from_str(text)
+
+    for something in submodel.descend():
+        print(type(something))
+
+Expected output:
+
+.. testoutput::
+
+    <class 'aas_core3.types.Property'>
+
+If you do not know the model type in advance, you can use the general functions such as :py:func:`aas_core3.xmlization.from_str` and :py:func:`aas_core3.xmlization.from_file`.
+The model type will be determined based on the first start element.
+The same example above can be thus rewritten:
+
+.. testcode::
+
+    import aas_core3.xmlization as aas_xmlization
+
+    text = (
+        "<submodel xmlns=\"https://admin-shell.io/aas/3/0\">" +
+        "<id>some-unique-global-identifier</id>" +
+        "<submodelElements><property><idShort>someProperty</idShort>" +
+        "<valueType>xs:boolean</valueType></property></submodelElements>" +
+        "</submodel>"
+    )
+
+    instance = aas_xmlization.from_str(text)
+
+    for something in instance.descend():
+        print(type(something))
+
+Expected output:
+
+.. testoutput::
+
+    <class 'aas_core3.types.Property'>
+
+Prefer the particular de-serialization (:py:func:`aas_core3.xmlization.submodel_from_str`) whenever you know the type in advance.
+The particular de-serialization function will check the actual model type for you, and you also get more precise type annotations for your downstream code.
+
 Errors
 ======
 
