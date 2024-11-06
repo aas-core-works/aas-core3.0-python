@@ -2,6 +2,13 @@
 Change Log
 **********
 
+1.1.1 (2024-11-06)
+==================
+We propagate the fix for V3.0 in the meta-model which reverted
+the order of ``data_specification`` and ``data_specification_content``.
+This was necessary so that the XML schemas for V3.0 remain backwards
+compatible.
+
 1.1.0 (2024-10-27)
 ==================
 We introduce additional functions which can de-serialize all model
