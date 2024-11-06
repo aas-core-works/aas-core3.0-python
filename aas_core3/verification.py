@@ -5587,12 +5587,12 @@ class _Transformer(aas_types.AbstractTransformer[Iterator[Error]]):
     def transform_embedded_data_specification(
         self, that: aas_types.EmbeddedDataSpecification
     ) -> Iterator[Error]:
-        for error in self.transform(that.data_specification_content):
-            error.path._prepend(PropertySegment(that, "data_specification_content"))
-            yield error
-
         for error in self.transform(that.data_specification):
             error.path._prepend(PropertySegment(that, "data_specification"))
+            yield error
+
+        for error in self.transform(that.data_specification_content):
+            error.path._prepend(PropertySegment(that, "data_specification_content"))
             yield error
 
     # noinspection PyMethodMayBeStatic
