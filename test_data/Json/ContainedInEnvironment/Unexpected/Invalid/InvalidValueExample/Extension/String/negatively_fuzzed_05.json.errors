@@ -1,1 +1,2 @@
 .asset_administration_shells[0].extensions[0]: The value must match the value type.
+.asset_administration_shells[0].extensions[0].value: Constraint AASd-130: An attribute with data type 'string' shall consist of these characters only: ^[\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD\U00010000-\U0010FFFF]*$.
