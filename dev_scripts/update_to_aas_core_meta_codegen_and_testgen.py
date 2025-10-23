@@ -292,6 +292,24 @@ def _run_tests_and_rerecord(our_repo: pathlib.Path) -> Optional[int]:
     env = os.environ.copy()
     env["AAS_CORE3_0_PYTHON_TESTS_RECORD_MODE"] = "true"
 
+    # NOTE (mristin):
+    # We need to include the repository root on the PYTHNPATH since the newer
+    # versions of Python (such as 3.11 and 3.12) exclude ``tests/`` from it --
+    # they rely on setup.py excluding them in ``find_package``:
+    #
+    # ``packages=find_packages(exclude=["tests", ...]),``
+    #
+    # . This means that the ``tests`` module will not be on the Python path, as newer
+    # versions of setuptools only put packages explicitly found by ``find_packages``.
+
+    python_path = env.get("PYTHONPATH", None)
+    if python_path is None:
+        python_path = str(our_repo)
+    else:
+        python_path = f"{python_path}{os.pathsep}{str(our_repo)}"
+
+    env["PYTHONPATH"] = python_path
+
     test_files = sorted((our_repo / "tests").glob("**/test_*.py"))
 
     # pylint: disable=consider-using-with
