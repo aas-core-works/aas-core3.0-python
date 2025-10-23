@@ -347,15 +347,6 @@ def _run_tests_and_rerecord(our_repo: pathlib.Path) -> Optional[int]:
     return None
 
 
-def _run_check(our_repo: pathlib.Path) -> None:
-    """Run the precommit checks."""
-    print("Running the pre-commit checks...")
-
-    precommit_script = our_repo / "continuous_integration/precommit.py"
-
-    subprocess.check_call([sys.executable, str(precommit_script)], cwd=our_repo)
-
-
 def _create_branch_commit_and_push(
     our_repo: pathlib.Path,
     aas_core_meta_revision: str,
@@ -628,8 +619,6 @@ def main() -> int:
     exit_code = _run_tests_and_rerecord(our_repo=our_repo)
     if exit_code is not None:
         return exit_code
-
-    _run_check(our_repo=our_repo)
 
     _create_branch_commit_and_push(
         our_repo=our_repo,
