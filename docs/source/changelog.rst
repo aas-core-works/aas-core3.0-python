@@ -1,6 +1,13 @@
 **********
 Change Log
 **********
+1.1.3 (2025-10-27)
+==================
+We propagate a fix for references index constraint where indices in references
+were erroneously assumed to be positive integers; please refer to:
+
+* https://github.com/aas-core-works/aas-core-meta/pull/370
+
 1.1.2 (2025-05-13)
 ==================
 We propagate the changes and fixes for V3.0.2; please refer to:
