@@ -15,10 +15,14 @@ def _generate_sdk(
     subprocess.run(
         [
             "aas-core-codegen",
-            "--model_path", str(meta_model_path),
-            "--snippets_dir", str(snippet_path),
-            "--output_dir", str(sdk_path / "aas_core3_0"),
-            "--target", "python",
+            "--model_path",
+            str(meta_model_path),
+            "--snippets_dir",
+            str(snippet_path),
+            "--output_dir",
+            str(sdk_path / "aas_core3_0"),
+            "--target",
+            "python",
         ],
         check=True,
     )

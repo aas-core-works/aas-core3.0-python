@@ -16,16 +16,6 @@ import tempfile
 import time
 from typing import Optional, List, Callable, AnyStr, Sequence
 
-# noinspection RegExpSimplifiable
-AAS_CORE_META_DEPENDENCY_RE = re.compile(
-    r"aas-core-meta@git\+https://github.com/aas-core-works/aas-core-meta@([a-fA-F0-9]+)#egg=aas-core-meta"
-)
-
-# noinspection RegExpSimplifiable
-AAS_CORE_CODEGEN_DEPENDENCY_RE = re.compile(
-    r"aas-core-codegen@git\+https://github.com/aas-core-works/aas-core-codegen@([a-fA-F0-9]+)#egg=aas-core-codegen"
-)
-
 
 def _make_sure_no_changed_files(
     repo_dir: pathlib.Path, expected_branch: str
@@ -53,46 +43,6 @@ def _make_sure_no_changed_files(
         return 1
 
     return None
-
-
-def _uninstall_and_install_aas_core_meta(
-    our_repo: pathlib.Path, aas_core_meta_revision: str
-) -> None:
-    """Uninstall and install the latest aas-core-meta in the virtual environment."""
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "uninstall", "-y", "aas-core-meta"],
-        cwd=str(our_repo),
-    )
-
-    aas_core_meta_dependency = (
-        f"aas-core-meta@git+https://github.com/aas-core-works/aas-core-meta"
-        f"@{aas_core_meta_revision}#egg=aas-core-meta"
-    )
-
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", aas_core_meta_dependency],
-        cwd=str(our_repo),
-    )
-
-
-def _uninstall_and_install_aas_core_codegen(
-    our_repo: pathlib.Path, aas_core_codegen_revision: str
-) -> None:
-    """Uninstall and install the latest aas-core-codegen in the virtual environment."""
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "uninstall", "-y", "aas-core-codegen"],
-        cwd=str(our_repo),
-    )
-
-    aas_core_codegen_dependency = (
-        f"aas-core-codegen@git+https://github.com/aas-core-works/aas-core-codegen"
-        f"@{aas_core_codegen_revision}#egg=aas-core-codegen"
-    )
-
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", aas_core_codegen_dependency],
-        cwd=str(our_repo),
-    )
 
 
 def _run_in_parallel(
@@ -152,10 +102,7 @@ def _run_in_parallel(
                 proc.terminate()
 
 
-def _regenerate_code(
-    our_repo: pathlib.Path,
-    meta_repo: pathlib.Path,
-) -> Optional[int]:
+def _regenerate_code(our_repo: pathlib.Path) -> Optional[int]:
     """
     Call codegen script.
 
@@ -163,11 +110,11 @@ def _regenerate_code(
     """
     codegen_dir = our_repo / "dev_scripts/codegen"
 
-    meta_model_path = meta_repo / "aas_core_meta/v3.py"
+    meta_model_path = codegen_dir / "meta_model.py"
 
     target_dir = our_repo
 
-    print(f"Starting to run codegen script")
+    print("Starting to run codegen script")
     start = time.perf_counter()
 
     proc = subprocess.run(
@@ -180,6 +127,7 @@ def _regenerate_code(
             str(target_dir),
         ],
         cwd=str(codegen_dir),
+        check=True,
     )
 
     if proc.returncode != 0:
@@ -314,8 +262,72 @@ with:
     subprocess.check_call(["git", "push", "-u"], cwd=our_repo)
 
 
+_AAS_CORE_CODEGEN_SHA_RE = re.compile(
+    r"aas-core-codegen@git\+https://github.com/aas-core-works/aas-core-codegen@([a-zA-Z0-9]+)"
+)
+
+
+def _get_codegen_revision(our_repo: pathlib.Path) -> str | None:
+    pyproject_toml_path = our_repo / "dev_scripts/pyproject.toml"
+
+    codegen_sha: str | None = None
+
+    sha_re = re.compile(_AAS_CORE_CODEGEN_SHA_RE)
+
+    try:
+        with pyproject_toml_path.open("r") as pyproject_toml_file:
+            for line in pyproject_toml_file:
+                matches = sha_re.search(line)
+
+                if matches is None:
+                    continue
+
+                codegen_sha = matches.group(1)
+                break
+
+    except OSError as os_error:
+        print(f"Cannot read codegen revision: {os_error}.")
+
+    if codegen_sha is None:
+        print("Cannot read codegen revision.")
+
+    return codegen_sha
+
+
+_AAS_CORE_META_SHA_RE = re.compile(
+    r"https://raw.githubusercontent.com/aas-core-works/aas-core-meta/([a-zA-Z0-9]+)/aas_core_meta/v.*.py"
+)
+
+
+def _get_meta_model_revision(our_repo: pathlib.Path) -> str | None:
+    meta_model_path = our_repo / "dev_scripts/codegen/meta_model.py"
+
+    meta_model_sha: str | None = None
+
+    sha_re = re.compile(_AAS_CORE_META_SHA_RE)
+
+    try:
+        with meta_model_path.open("r") as meta_model_file:
+            for line in meta_model_file:
+                matches = sha_re.search(line)
+
+                if matches is None:
+                    continue
+
+                meta_model_sha = matches.group(1)[:8]
+                break
+
+    except OSError as os_error:
+        print(f"Cannot read meta model revision: {os_error}.")
+
+    if meta_model_sha is None:
+        print("Cannot read meta model revision.")
+
+    return meta_model_sha
+
+
 def _get_testgen_revision(our_repo: pathlib.Path) -> str | None:
-    testgen_rev_path = our_repo / "test/testgen_rev.txt"
+    testgen_rev_path = our_repo / "tests/testgen_rev.txt"
 
     testgen_rev: str | None = None
 
@@ -337,26 +349,7 @@ def main() -> int:
     our_repo = this_path.parent.parent
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--aas_core_meta_repo",
-        help="path to the aas-core-meta repository",
-        default=str(our_repo.parent / "aas-core-meta"),
-    )
-    parser.add_argument(
-        "--expected_aas_core_meta_branch",
-        help="Git branch expected in the aas-core-meta repository",
-        default="main",
-    )
-    parser.add_argument(
-        "--aas_core_codegen_repo",
-        help="path to the aas-core-codegen repository",
-        default=str(our_repo.parent / "aas-core-codegen"),
-    )
-    parser.add_argument(
-        "--expected_aas_core_codegen_branch",
-        help="Git branch expected in the aas-core-meta repository",
-        default="main",
-    )
+
     parser.add_argument(
         "--expected_our_branch",
         help="Git branch expected in this repository",
@@ -365,89 +358,7 @@ def main() -> int:
 
     args = parser.parse_args()
 
-    aas_core_meta_repo = pathlib.Path(args.aas_core_meta_repo)
-    expected_aas_core_meta_branch = str(args.expected_aas_core_meta_branch)
-
-    aas_core_codegen_repo = pathlib.Path(args.aas_core_codegen_repo)
-    expected_aas_core_codegen_branch = str(args.expected_aas_core_codegen_branch)
-
     expected_our_branch = str(args.expected_our_branch)
-
-    # region aas-core-meta repo
-
-    if not aas_core_meta_repo.exists():
-        print(
-            f"--aas_core_meta_repo does not exist: {aas_core_meta_repo}",
-            file=sys.stderr,
-        )
-        return 1
-
-    if not aas_core_meta_repo.is_dir():
-        print(
-            f"--aas_core_meta_repo is not a directory: {aas_core_meta_repo}",
-            file=sys.stderr,
-        )
-        return 1
-
-    aas_core_meta_branch = subprocess.check_output(
-        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-        cwd=str(aas_core_meta_repo),
-        encoding="utf-8",
-    ).strip()
-    if aas_core_meta_branch != expected_aas_core_meta_branch:
-        print(
-            f"--expected_aas_core_meta_branch is {expected_aas_core_meta_branch}, "
-            f"but got {aas_core_meta_branch} "
-            f"in --aas_core_meta_repo: {aas_core_meta_repo}",
-            file=sys.stderr,
-        )
-        return 1
-
-    aas_core_meta_revision = subprocess.check_output(
-        ["git", "rev-parse", "--short", "HEAD"],
-        cwd=str(aas_core_meta_repo),
-        encoding="utf-8",
-    ).strip()
-
-    # endregion
-
-    # region aas-core-codegen repo
-
-    if not aas_core_codegen_repo.exists():
-        print(
-            f"--aas_core_codegen_repo does not exist: {aas_core_codegen_repo}",
-            file=sys.stderr,
-        )
-        return 1
-
-    if not aas_core_codegen_repo.is_dir():
-        print(
-            f"--aas_core_codegen_repo is not a directory: {aas_core_codegen_repo}",
-            file=sys.stderr,
-        )
-        return 1
-
-    aas_core_codegen_branch = subprocess.check_output(
-        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
-        cwd=str(aas_core_codegen_repo),
-        encoding="utf-8",
-    ).strip()
-    if aas_core_codegen_branch != expected_aas_core_codegen_branch:
-        print(
-            f"--expected_aas_core_codegen_branch is {expected_aas_core_codegen_branch}, "
-            f"but got {aas_core_codegen_branch} "
-            f"in --aas_core_codegen_repo: {aas_core_codegen_repo}",
-            file=sys.stderr,
-        )
-        return 1
-
-    aas_core_codegen_revision = subprocess.check_output(
-        ["git", "rev-parse", "--short", "HEAD"],
-        cwd=str(aas_core_codegen_repo),
-        encoding="utf-8",
-    ).strip()
-
-    # endregion
 
     # region Our repo
 
@@ -466,26 +377,13 @@ def main() -> int:
 
     # endregion
 
-    for repo_dir, expected_branch in [
-        (our_repo, expected_our_branch),
-        (aas_core_meta_repo, expected_aas_core_meta_branch),
-        (aas_core_codegen_repo, expected_aas_core_codegen_branch),
-    ]:
-        exit_code = _make_sure_no_changed_files(
-            repo_dir=repo_dir, expected_branch=expected_branch
-        )
-        if exit_code is not None:
-            return exit_code
-
-    _uninstall_and_install_aas_core_meta(
-        our_repo=our_repo, aas_core_meta_revision=aas_core_meta_revision
+    exit_code = _make_sure_no_changed_files(
+        repo_dir=our_repo, expected_branch=expected_our_branch
     )
+    if exit_code is not None:
+        return exit_code
 
-    _uninstall_and_install_aas_core_codegen(
-        our_repo=our_repo, aas_core_codegen_revision=aas_core_codegen_revision
-    )
-
-    exit_code = _regenerate_code(our_repo=our_repo, meta_repo=aas_core_meta_repo)
+    exit_code = _regenerate_code(our_repo=our_repo)
     if exit_code is not None:
         return exit_code
 
@@ -494,6 +392,14 @@ def main() -> int:
     exit_code = _run_tests_and_rerecord(our_repo=our_repo)
     if exit_code is not None:
         return exit_code
+
+    aas_core_codegen_revision = _get_codegen_revision(our_repo=our_repo)
+    if aas_core_codegen_revision is None:
+        return 1
+
+    aas_core_meta_revision = _get_meta_model_revision(our_repo=our_repo)
+    if aas_core_meta_revision is None:
+        return 1
 
     aas_core_testgen_revision = _get_testgen_revision(our_repo=our_repo)
     if aas_core_testgen_revision is None:
