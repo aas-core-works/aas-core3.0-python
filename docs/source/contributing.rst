@@ -28,16 +28,11 @@ However, this needs to be decided on a case-by-case basis.
 
 .. _aas-core-codegen: https://github.com/aas-core-works/aas-core-codegen
 
-Test Code Generation
-====================
-
-The majority of the unit tests has been automatically generated using the Python scripts in the ``dev_scripts/`` directory.
-
-To re-generate the test code, run:
+To re-generate the code, run:
 
 .. code-block::
 
-    python dev_scripts/generate_all.py
+    python dev_scripts/update_to_aas_core_meta_codegen.py
 
 Test Data
 =========
