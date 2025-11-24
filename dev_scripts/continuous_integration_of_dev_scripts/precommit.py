@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 """Run pre-commit checks on the repository."""
+
 import argparse
 import enum
 import os
@@ -22,7 +23,6 @@ class Step(enum.Enum):
     PYLINT = "pylint"
     TEST = "test"
     DOCTEST = "doctest"
-    CHECK_INIT_AND_SETUP_COINCIDE = "check-init-and-setup-coincide"
 
 
 def call_and_report(
@@ -99,30 +99,29 @@ def main() -> int:
     )
     skips = [Step(value) for value in args.skip] if args.skip is not None else []
 
-    repo_root = pathlib.Path(os.path.realpath(__file__)).parent.parent
+    src_root = pathlib.Path(os.path.realpath(__file__)).parent.parent
 
     if Step.REFORMAT in selects and Step.REFORMAT not in skips:
         print("Re-formatting...")
         reformat_targets = [
-            "aas_core3",
-            "continuous_integration",
-            "tests",
-            "setup.py",
+            "codegen/codegen.py",
+            "codegen/download_aas_core_meta_model.py",
+            "continuous_integration_of_dev_scripts",
+            "update_to_aas_core_meta_codegen.py",
         ]
-
         if overwrite:
             exit_code = call_and_report(
                 verb="black",
-                cmd=[sys.executable, "-m", "black"] + reformat_targets,
-                cwd=repo_root,
+                cmd=["black"] + reformat_targets,
+                cwd=src_root,
             )
             if exit_code != 0:
                 return 1
         else:
             exit_code = call_and_report(
                 verb="check with black",
-                cmd=[sys.executable, "-m", "black", "--check"] + reformat_targets,
-                cwd=repo_root,
+                cmd=["black", "--check"] + reformat_targets,
+                cwd=src_root,
             )
             if exit_code != 0:
                 return 1
@@ -132,24 +131,17 @@ def main() -> int:
     if Step.MYPY in selects and Step.MYPY not in skips:
         print("Mypy'ing...")
         mypy_targets = [
-            "aas_core3",
-            "tests",
-            "continuous_integration",
+            "codegen/codegen.py",
+            "codegen/download_aas_core_meta_model.py",
+            "continuous_integration_of_dev_scripts",
+            "update_to_aas_core_meta_codegen.py",
         ]
-        config_file = pathlib.Path("continuous_integration") / "mypy.ini"
+        config_file = pathlib.Path("continuous_integration_of_dev_scripts") / "mypy.ini"
 
         exit_code = call_and_report(
             verb="mypy",
-            cmd=[
-                sys.executable,
-                "-m",
-                "mypy",
-                "--strict",
-                "--config-file",
-                str(config_file),
-            ]
-            + mypy_targets,
-            cwd=repo_root,
+            cmd=["mypy", "--strict", "--config-file", str(config_file)] + mypy_targets,
+            cwd=src_root,
         )
         if exit_code != 0:
             return 1
@@ -159,110 +151,47 @@ def main() -> int:
     if Step.PYLINT in selects and Step.PYLINT not in skips:
         print("Pylint'ing...")
         pylint_targets = [
-            "aas_core3",
-            "tests",
-            "continuous_integration",
-            "dev_scripts",
+            "codegen/codegen.py",
+            "codegen/download_aas_core_meta_model.py",
+            "continuous_integration_of_dev_scripts",
+            "update_to_aas_core_meta_codegen.py",
         ]
-        rcfile = pathlib.Path("continuous_integration") / "pylint.rc"
+        rcfile = pathlib.Path("continuous_integration_of_dev_scripts") / "pylint.rc"
 
         exit_code = call_and_report(
             verb="pylint",
-            cmd=[sys.executable, "-m", "pylint", f"--rcfile={rcfile}"] + pylint_targets,
-            cwd=repo_root,
+            cmd=["pylint", f"--rcfile={rcfile}"] + pylint_targets,
+            cwd=src_root,
         )
         if exit_code != 0:
             return 1
     else:
         print("Skipped pylint'ing.")
 
-    if Step.TEST in selects and Step.TEST not in skips:
-        print("Testing...")
-        env = os.environ.copy()
-        env["ICONTRACT_SLOW"] = "true"
-
-        exit_code = call_and_report(
-            verb="execute unit tests",
-            cmd=[
-                sys.executable,
-                "-m",
-                "coverage",
-                "run",
-                "--source",
-                "aas_core3",
-                "-m",
-                "unittest",
-                "discover",
-                "--start-directory",
-                "tests",
-            ],
-            cwd=repo_root,
-            env=env,
-        )
-        if exit_code != 0:
-            return 1
-
-        exit_code = call_and_report(
-            verb="report the coverage",
-            cmd=[sys.executable, "-m", "coverage", "report"],
-            cwd=repo_root,
-        )
-        if exit_code != 0:
-            return 1
-    else:
-        print("Skipped testing.")
-
     if Step.DOCTEST in selects and Step.DOCTEST not in skips:
         print("Doctest'ing...")
 
-        # BEFORE-RELEASE (mristin, 2021-12-13):
-        #  Add ``{repo_root}/docs/source/**/*.rst`` as well here
-        doc_files = ["README.rst"]
+        for module_name in [
+            "continuous_integration_of_dev_scripts",
+        ]:
+            for pth in (src_root / module_name).glob("**/*.py"):
+                if pth.name == "__main__.py":
+                    continue
 
-        exit_code = call_and_report(
-            verb="doctest",
-            cmd=[sys.executable, "-m", "doctest"] + doc_files,
-            cwd=repo_root,
-        )
-        if exit_code != 0:
-            return 1
-
-        for pth in (repo_root / "aas_core3").glob("**/*.py"):
-            if pth.name == "__main__.py":
-                continue
-
-            # NOTE (mristin, 2021-12-27):
-            # The subprocess calls are expensive, call only if there is an actual
-            # doctest
-            text = pth.read_text(encoding="utf-8")
-            if ">>>" in text:
-                exit_code = call_and_report(
-                    verb="doctest",
-                    cmd=[sys.executable, "-m", "doctest", str(pth)],
-                    cwd=repo_root,
-                )
-                if exit_code != 0:
-                    return 1
+                # NOTE (mristin, 2022-12-08):
+                # The subprocess calls are expensive, call only if there is an actual
+                # doctest
+                text = pth.read_text(encoding="utf-8")
+                if ">>>" in text:
+                    exit_code = call_and_report(
+                        verb="doctest",
+                        cmd=[sys.executable, "-m", "doctest", str(pth)],
+                        cwd=src_root,
+                    )
+                    if exit_code != 0:
+                        return 1
     else:
         print("Skipped doctest'ing.")
-
-    if (
-        Step.CHECK_INIT_AND_SETUP_COINCIDE in selects
-        and Step.CHECK_INIT_AND_SETUP_COINCIDE not in skips
-    ):
-        print("Checking that aas_core3/__init__.py and setup.py coincide...")
-        exit_code = call_and_report(
-            verb="check that aas_core3/__init__.py and setup.py coincide",
-            cmd=[
-                sys.executable,
-                "continuous_integration/check_init_and_setup_coincide.py",
-            ],
-            cwd=repo_root,
-        )
-        if exit_code != 0:
-            return 1
-    else:
-        print("Skipped checking that aas_core3/__init__.py and setup.py coincide.")
 
     return 0
 
