@@ -70,6 +70,15 @@ If you want a self-healing checks, run:
 
     python continuous_integration/precommit.py --overwrite
 
+The pre-commit checks for the development tools are managed separately in
+`dev_scripts/continuous_integration_of_dev_scripts`. You can install and run them
+in a similar manner from your root directory:
+
+.. code-block::
+
+    pip3 install --editable dev_scripts --group dev_scripts/pyproject.toml:dev
+    python dev_scripts/continuous_integration_of_dev_scripts/precommit.py
+
 Pull Requests
 =============
 
