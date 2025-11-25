@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 """Run pre-commit checks on the repository."""
+
 import argparse
 import enum
 import os
@@ -22,7 +23,7 @@ class Step(enum.Enum):
     PYLINT = "pylint"
     TEST = "test"
     DOCTEST = "doctest"
-    CHECK_INIT_AND_SETUP_COINCIDE = "check-init-and-setup-coincide"
+    CHECK_INIT_AND_PYPROJECT_TOML_COINCIDE = "check-init-and-pyproject-coincide"
 
 
 def call_and_report(
@@ -107,7 +108,6 @@ def main() -> int:
             "aas_core3",
             "continuous_integration",
             "tests",
-            "setup.py",
         ]
 
         if overwrite:
@@ -247,22 +247,24 @@ def main() -> int:
         print("Skipped doctest'ing.")
 
     if (
-        Step.CHECK_INIT_AND_SETUP_COINCIDE in selects
-        and Step.CHECK_INIT_AND_SETUP_COINCIDE not in skips
+        Step.CHECK_INIT_AND_PYPROJECT_TOML_COINCIDE in selects
+        and Step.CHECK_INIT_AND_PYPROJECT_TOML_COINCIDE not in skips
     ):
-        print("Checking that aas_core3/__init__.py and setup.py coincide...")
+        print("Checking that aas_core3/__init__.py and pyproject.toml coincide...")
         exit_code = call_and_report(
-            verb="check that aas_core3/__init__.py and setup.py coincide",
+            verb="check that aas_core3/__init__.py and pyproject.toml coincide",
             cmd=[
                 sys.executable,
-                "continuous_integration/check_init_and_setup_coincide.py",
+                "continuous_integration/check_init_and_pyproject_toml_coincide.py",
             ],
             cwd=repo_root,
         )
         if exit_code != 0:
             return 1
     else:
-        print("Skipped checking that aas_core3/__init__.py and setup.py coincide.")
+        print(
+            "Skipped checking that aas_core3/__init__.py and pyproject.toml coincide."
+        )
 
     return 0
 

@@ -4,5 +4,5 @@
 __version__ = "1.1.3"
 __author__ = "Marko Ristin"
 __copyright__ = "2024 Contributors to aas-core3.0-python"
-__license__ = "License :: OSI Approved :: MIT License"
+__license__ = "MIT"
 __status__ = "Production/Stable"

@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aas-core3.0"
+dynamic = ["version"]
+description = "Manipulate, verify and de/serialize Asset Administration Shells."
+readme = { file = "README.rst", content-type = "text/x-rst" }
+authors = [
+    { name = "Marko Ristin", email = "marko@ristin.ch" },
+]
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["asset administration shell", "sdk", "industry 4.0", "industrie", "i4.0", "industry", "iot", "iiot"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "typing_extensions; python_version<'3.9'",
+]
+
+[dependency-groups]
+dev = [
+    "black==22.10.0",
+    "coverage>=6.5.0,<7",
+    "mypy==0.982",
+    "pyinstaller>=5,<6",
+    "pylint==2.15.4; python_version<'3.11'",
+    "pylint==4.0.3; python_version>'3.10'",
+    "tomli; python_version<'3.11'",
+    "twine",
+]
+
+[project.urls]
+Homepage = "https://github.com/aas-core-works/aas-core3.0-python"
+Repository = "https://github.com/aas-core-works/aas-core3.0-python"
+Issues = "https://github.com/aas-core-works/aas-core3.0-python/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aas_core3*"]
+exclude = ["tests", "continuous_integration", "dev_scripts"]
+
+[tool.setuptools.dynamic]
+version = { attr = "aas_core3.__version__" }
+
+[tool.setuptools.package-data]
+"aas_core3" = ["py.typed"]

@@ -165,7 +165,7 @@ def _run_tests_and_rerecord(our_repo: pathlib.Path) -> Optional[int]:
     # NOTE (mristin):
     # We need to include the repository root on the PYTHNPATH since the newer
     # versions of Python (such as 3.11 and 3.12) exclude ``tests/`` from it --
-    # they rely on setup.py excluding them in ``find_package``:
+    # they rely on pyproject.toml excluding them in ``find_package``:
     #
     # ``packages=find_packages(exclude=["tests", ...]),``
     #

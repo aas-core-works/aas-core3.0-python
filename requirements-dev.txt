@@ -1,6 +1,0 @@
-black==22.10.0
-mypy==0.982
-pylint==2.15.4
-coverage>=6.5.0,<7
-pyinstaller>=5,<6
-twine
