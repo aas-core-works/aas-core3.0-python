@@ -20,7 +20,7 @@ def _generate_sdk(
             "--snippets_dir",
             str(snippet_path),
             "--output_dir",
-            str(sdk_path / "aas_core3_0"),
+            str(sdk_path / "aas_core3"),
             "--target",
             "python",
         ],
