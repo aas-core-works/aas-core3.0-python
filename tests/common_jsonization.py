@@ -1562,7 +1562,9 @@ def load_minimal_file() -> aas_types.File:
     return instance
 
 
-def load_maximal_annotated_relationship_element() -> aas_types.AnnotatedRelationshipElement:
+def load_maximal_annotated_relationship_element() -> (
+    aas_types.AnnotatedRelationshipElement
+):
     """
     Load a maximal example
     of :py:class:`aas_types.AnnotatedRelationshipElement`
@@ -1605,7 +1607,9 @@ def load_maximal_annotated_relationship_element() -> aas_types.AnnotatedRelation
     return instance
 
 
-def load_minimal_annotated_relationship_element() -> aas_types.AnnotatedRelationshipElement:
+def load_minimal_annotated_relationship_element() -> (
+    aas_types.AnnotatedRelationshipElement
+):
     """
     Load a minimal example
     of :py:class:`aas_types.AnnotatedRelationshipElement`
@@ -2942,7 +2946,9 @@ def load_minimal_value_list() -> aas_types.ValueList:
     return instance
 
 
-def load_maximal_lang_string_preferred_name_type_iec_61360() -> aas_types.LangStringPreferredNameTypeIEC61360:
+def load_maximal_lang_string_preferred_name_type_iec_61360() -> (
+    aas_types.LangStringPreferredNameTypeIEC61360
+):
     """
     Load a maximal example
     of :py:class:`aas_types.LangStringPreferredNameTypeIEC61360`
@@ -2985,7 +2991,9 @@ def load_maximal_lang_string_preferred_name_type_iec_61360() -> aas_types.LangSt
     return instance
 
 
-def load_minimal_lang_string_preferred_name_type_iec_61360() -> aas_types.LangStringPreferredNameTypeIEC61360:
+def load_minimal_lang_string_preferred_name_type_iec_61360() -> (
+    aas_types.LangStringPreferredNameTypeIEC61360
+):
     """
     Load a minimal example
     of :py:class:`aas_types.LangStringPreferredNameTypeIEC61360`
@@ -3028,7 +3036,9 @@ def load_minimal_lang_string_preferred_name_type_iec_61360() -> aas_types.LangSt
     return instance
 
 
-def load_maximal_lang_string_short_name_type_iec_61360() -> aas_types.LangStringShortNameTypeIEC61360:
+def load_maximal_lang_string_short_name_type_iec_61360() -> (
+    aas_types.LangStringShortNameTypeIEC61360
+):
     """
     Load a maximal example
     of :py:class:`aas_types.LangStringShortNameTypeIEC61360`
@@ -3071,7 +3081,9 @@ def load_maximal_lang_string_short_name_type_iec_61360() -> aas_types.LangString
     return instance
 
 
-def load_minimal_lang_string_short_name_type_iec_61360() -> aas_types.LangStringShortNameTypeIEC61360:
+def load_minimal_lang_string_short_name_type_iec_61360() -> (
+    aas_types.LangStringShortNameTypeIEC61360
+):
     """
     Load a minimal example
     of :py:class:`aas_types.LangStringShortNameTypeIEC61360`
@@ -3114,7 +3126,9 @@ def load_minimal_lang_string_short_name_type_iec_61360() -> aas_types.LangString
     return instance
 
 
-def load_maximal_lang_string_definition_type_iec_61360() -> aas_types.LangStringDefinitionTypeIEC61360:
+def load_maximal_lang_string_definition_type_iec_61360() -> (
+    aas_types.LangStringDefinitionTypeIEC61360
+):
     """
     Load a maximal example
     of :py:class:`aas_types.LangStringDefinitionTypeIEC61360`
@@ -3157,7 +3171,9 @@ def load_maximal_lang_string_definition_type_iec_61360() -> aas_types.LangString
     return instance
 
 
-def load_minimal_lang_string_definition_type_iec_61360() -> aas_types.LangStringDefinitionTypeIEC61360:
+def load_minimal_lang_string_definition_type_iec_61360() -> (
+    aas_types.LangStringDefinitionTypeIEC61360
+):
     """
     Load a minimal example
     of :py:class:`aas_types.LangStringDefinitionTypeIEC61360`

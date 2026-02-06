@@ -76,7 +76,7 @@ def trace(
         enum.Enum,
         aas_types.Class,
         Sequence[aas_types.Class],
-    ]
+    ],
 ) -> str:
     """
     Generate a segment in a trace of an iteration.
