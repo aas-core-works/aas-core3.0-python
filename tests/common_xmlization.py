@@ -1,4 +1,5 @@
 """Provide common functionality for XML de-serialization."""
+
 import io
 import xml.etree.ElementTree as ET
 import sys

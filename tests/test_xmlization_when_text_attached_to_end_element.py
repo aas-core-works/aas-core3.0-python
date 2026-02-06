@@ -672,7 +672,7 @@ class TestOnXSIAttributes(unittest.TestCase):
         )
 
         def with_attributes_removed(
-            an_iterator: Iterator[Tuple[str, xml.etree.ElementTree.Element]]
+            an_iterator: Iterator[Tuple[str, xml.etree.ElementTree.Element]],
         ) -> Iterator[Tuple[str, xml.etree.ElementTree.Element]]:
             """
             Map the :paramref:`iterator` such that all attributes are removed.
